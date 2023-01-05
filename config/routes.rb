@@ -16,4 +16,8 @@ Rails.application.routes.draw do
     end
     resources :attendances, only: :update
   end
+  
+  namespace :users do
+  resources :searches, only: :index
+  end
 end
