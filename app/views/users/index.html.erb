@@ -4,18 +4,15 @@
 <% else %>
   <h1>検索結果</h1>
 <% end %>
-<div class="row" id="search">
-  <div class="col-lg-4">
-    <%= form_with(url: users_path, local: true) do |f| %>
-      <%= f.label :"ユーザー名検索" %>
-      <div class="input-group"> 
-        <%= f.text_field :search, value: params[:search], class: "form-control", placeholder: "キーワードを入力…" %>
-        <span class="input-group-btn">
-          <%= f.submit :'検索', class: "btn btn-primary" %>
-        </span>
-      </div>
-    <% end %>
-  </div>
+
+    <div class=" col-md-10 col-md-offset-8">
+
+     <b>ユーザー名検索</b>
+
+    <%= form_with url: users_path, method: :get, local: true do |f| %> <!--検索結果を表示したいurlの指定します-->
+    <%= f.text_field :search %> <!--検索するワードを searchという架空のカラムに格納される-->
+    <%= f.submit "検索",name: nil , class: "btn btn-primary" %>
+  <% end %>
 </div>
 <div class="col-md-10 col-md-offset-1">
   <%= will_paginate %>

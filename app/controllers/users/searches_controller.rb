@@ -1,5 +1,6 @@
 class Users::SearchesController < ApplicationController
   def index
-    @tweets = Tweet.search(params[:keyword])
+    @users = user.search(params[:keyword])
+    @search_word = params[:keyword]
   end
 end

@@ -1,14 +1,17 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
-  before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
+  before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :edit_user]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info]
-  before_action :set_one_month, only: :show
-
+  before_action :set_one_month, only: [:show]
+  
+  
+    # システム管理権限所有かどうか判定します。
   def index
-    @users = User.search(params[:search]).paginate(page: params[:page], per_page: 20)
+    @users = User.paginate(page: params[:page])
+    @users = @users.where('name LIKE ?', "%#{params[:search]}%") if params[:search].present?
   end
-
+  
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
   end
@@ -18,7 +21,7 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(user_params)
+    @user = User.new(users_params)
     if @user.save
       log_in @user
       flash[:success] = '新規作成に成功しました。'
@@ -29,10 +32,11 @@ class UsersController < ApplicationController
   end
 
   def edit
+    @user =User.find(params[:id])
   end
 
   def update
-    if @user.update_attributes(user_params)
+    if @user.update_attributes(users_params)
       flash[:success] = "ユーザー情報を更新しました。"
       redirect_to @user
     else
@@ -49,6 +53,9 @@ class UsersController < ApplicationController
   def edit_basic_info
   end
 
+  def edit_one_month
+  end
+  
   def update_basic_info
     if @user.update_attributes(basic_info_params)
       flash[:success] = "#{@user.name}の基本情報を更新しました。"
@@ -60,11 +67,28 @@ class UsersController < ApplicationController
 
   private
 
-    def user_params
-      params.require(:user).permit(:name, :email, :department, :password, :password_confirmation)
-    end
+  def users_params
+  params.require(:user).permit(:name, :email, :department, :password, :password_confirmation)
 
-    def basic_info_params
-      params.require(:user).permit(:department, :basic_time, :work_time)
-    end
+  end
+
+  def basic_info_params
+    params.require(:user).permit(:department, :basic_time, :work_time)
+  end  
+  
+  def basic_work_time
+    @a_finish_at -= @a_start_at 
+  end
+  
+  def logged_in_user
+   unless logged_in?
+    flash[:danger] = "ログインしてください。"
+    redirect_to login_url
+   end  
+  end
+  
+  def correct_user
+  @user = User.find(params[:id])
+  redirect_to(root_url) unless @user == current_user
+  end
 end
