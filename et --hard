@@ -1,0 +1,155 @@
+[33mcommit 0eedd18daa17e91d1beecb163ecf52bb04e16a23[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Sat Feb 4 13:01:09 2023 +0000
+
+    Update Gemfile for Heroku
+
+[33mcommit 3eaf525814bad4b987befd9dcbc6307c7c24ff44[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Sat Feb 4 12:48:16 2023 +0000
+
+    提出用
+
+[33mcommit b669863d903d8423d5b8437604493c8af68b2289[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Thu Feb 2 15:30:58 2023 +0000
+
+    提出前
+
+[33mcommit 5dd3797470478358ad4327d292be90948f365f6e[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Wed Feb 1 13:36:22 2023 +0000
+
+    在社時間
+
+[33mcommit e6082eb195bb59dff62531fd25ec022072bfd562[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Fri Jan 27 15:15:33 2023 +0000
+
+    15分単位
+
+[33mcommit 3f1e6f9804f885344df3749c61580c0e37e82dba[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Thu Jan 5 15:27:15 2023 +0000
+
+    検索フォーム
+
+[33mcommit a5887efe7b9731a86f3ccabed9dbb728d97c5a13[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Wed Nov 16 10:08:07 2022 +0000
+
+    Change from HTTPS to SSH
+
+[33mcommit a7f0d7beb1e52374d2cb4ffb0652be6328adb7ea[m[33m ([m[1;32medit-attendances[m[33m)[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Fri Nov 11 11:35:40 2022 +0000
+
+    Finish edit-attendances
+
+[33mcommit 620d033660eb67c064a088cede84551a71569a4b[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Fri Nov 11 09:59:33 2022 +0000
+
+    Finish add-user-attendances
+
+[33mcommit 559346d07d4f2d1b01b2f0fd4dea77997ca14f50[m[33m ([m[1;32madd-user-attendances[m[33m)[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Wed Nov 9 16:26:16 2022 +0000
+
+    10.4
+
+[33mcommit 6f8db9b53fdeddfa3c71c0995a1377fd62af33f9[m[33m ([m[1;32madd-basic-info[m[33m)[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Tue Nov 8 15:05:08 2022 +0000
+
+    Finish add-basic-info
+
+[33mcommit b0bf6bf92f0eb95c3ca00f372aae2d6a4229c66b[m[33m ([m[1;32mjapanization-and-time-format[m[33m)[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Mon Oct 17 16:34:00 2022 +0000
+
+    Finish japanization-and-time-format
+
+[33mcommit 02cec59ceb971bad539f0ed2306c0a4e1992dbdc[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Sun Oct 16 16:50:10 2022 +0000
+
+    Finish editing-users
+
+[33mcommit 5ae36b388db5932cee0b52d41e6709350c171316[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Fri Oct 14 16:04:06 2022 +0000
+
+    Finish full-fledged-login
+
+[33mcommit abe61aeb20d648d4f9d9149c0bf69c04da8d029d[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Fri Oct 14 15:55:30 2022 +0000
+
+    Finish full-fledged-login
+
+[33mcommit 45d570aee83cda839a3caa6af50899256a35c376[m[33m ([m[1;32mlogin-function[m[33m)[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Fri Oct 14 11:02:24 2022 +0000
+
+    Finish login-function
+
+[33mcommit 0399c18c162c8e139b6031bdc342ebe0acfd338b[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Sat Oct 8 15:37:26 2022 +0000
+
+    Finish signup-user
+
+[33mcommit c2a01d29bc5897bc17e9716526823d8c1fb4d050[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Fri Oct 7 14:36:20 2022 +0000
+
+    5. 4 ユーザーの情報ページ
+
+[33mcommit ac4d1bbb0814f6fbb0d90085d82c18bea3e7696d[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Fri Oct 7 12:29:55 2022 +0000
+
+    Finish modeling-user
+
+[33mcommit f087e9d2b9ff2fd9edeaf9a49e309956a0e92513[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Sat Sep 17 16:05:18 2022 +0000
+
+    maximum: 50
+
+[33mcommit 456cb4197ca73f2cf96df2564de140b1ee7a946c[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Thu Sep 15 13:56:40 2022 +0000
+
+    Finish page-layout
+
+[33mcommit 6159af5ea5b21192937c4765042a975641d11cc5[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Sat Sep 10 16:05:29 2022 +0000
+
+    Finish top-page
+
+[33mcommit 455239c9f114b6f6fe94978d8fa3069aea1604c5[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Sat Sep 10 15:43:26 2022 +0000
+
+    タイトルがTop | AttendanceApp
+
+[33mcommit 087b8816fdaa7a3dc9390686b3f6c7ed0f25ddd0[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Sat Sep 10 15:25:05 2022 +0000
+
+    static_pagesコントローラーを追加
+
+[33mcommit ab838cc7544f68b5c5016215fa5eba3d2b0b8052[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Sun Jul 10 14:49:29 2022 +0000
+
+    Initialize repository
+
+[33mcommit 28640c6f8bfbedd5c3b80a9ed81e547d81785301[m
+Author: 0507osaOT <o.tsuboi0507@gmail.com>
+Date:   Thu Jun 30 09:26:29 2022 +0000
+
+    Initialize repository
