@@ -4,12 +4,19 @@ class UsersController < ApplicationController
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info]
   before_action :set_one_month, only: [:show]
+  before_action :user_admin, only: [:index]
+  
   
   
     # システム管理権限所有かどうか判定します。
   def index
     @users = User.paginate(page: params[:page])
     @users = @users.where('name LIKE ?', "%#{params[:search]}%") if params[:search].present?
+    @users = User.all
+    @users = User.find(params[:id])
+     if @users.user == current_user
+        render "ユーザー覧"
+     end
   end
   
   def show
@@ -89,6 +96,15 @@ class UsersController < ApplicationController
   
   def correct_user
   @user = User.find(params[:id])
-  redirect_to(root_url) unless @user == current_user
+  redirect_to(root_url) unless current_user?(@user)
+  end
+  
+  def user_admin
+    @users = User.all
+      if  current_user.admin == false
+          redirect_to root_path
+      else
+          render action: "index"
+      end
   end
 end
