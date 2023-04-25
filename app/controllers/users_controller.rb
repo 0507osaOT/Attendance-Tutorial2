@@ -5,8 +5,7 @@ class UsersController < ApplicationController
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info]
   before_action :set_one_month, only: [:show]
   before_action :user_admin, only: [:index]
-  
-  
+  #before_action :check_user_authorization, only: [:index, :show]
   
     # システム管理権限所有かどうか判定します。
   def index
@@ -21,6 +20,12 @@ class UsersController < ApplicationController
   
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
+  
+    # ログインユーザーが管理者または自分自身の場合は処理を終了する
+    return if current_user.admin? || current_user == @user
+    # それ以外の場合は権限エラーメッセージを表示する
+    flash[:danger] = "権限がありません"
+    redirect_to(root_url)
   end
 
   def new
@@ -43,11 +48,11 @@ class UsersController < ApplicationController
   end
 
   def update
-    if @user.update_attributes(users_params)
-      flash[:success] = "ユーザー情報を更新しました。"
+    if @user.update(users_params)
+      flash[:success] = "ユーザー情報を更新しました"
       redirect_to @user
     else
-      render :edit      
+      render 'edit'
     end
   end
 
@@ -65,18 +70,17 @@ class UsersController < ApplicationController
   
   def update_basic_info
     if @user.update_attributes(basic_info_params)
-      flash[:success] = "#{@user.name}の基本情報を更新しました。"
+      flash[:success] = "#{user.name}の基本情報を更新しました。"
     else
-      flash[:danger] = "#{@user.name}の更新は失敗しました。<br>" + @user.errors.full_messages.join("<br>")
+      flash[:danger] = "#{user.name}の更新は失敗しました。<br>" + @user.errors.full_messages.join("<br>")
     end
     redirect_to users_url
   end
-
+  
   private
 
   def users_params
-  params.require(:user).permit(:name, :email, :department, :password, :password_confirmation)
-
+   params.require(:user).permit(:name, :email, :department, :password, :password_confirmation)
   end
 
   def basic_info_params
@@ -106,5 +110,13 @@ class UsersController < ApplicationController
       else
           render action: "index"
       end
+  end
+  
+  def check_user_authorization
+    user = User.find(params[:id])
+    unless current_user.admin || current_user == user
+      flash[:alert] = "権限がありません"
+     redirect_to(root_url)
+    end
   end
 end
