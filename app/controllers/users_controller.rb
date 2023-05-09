@@ -48,11 +48,22 @@ class UsersController < ApplicationController
   end
 
   def update
-    if @user.update(users_params)
-      flash[:success] = "ユーザー情報を更新しました"
-      redirect_to @user
-    else
-      render 'edit'
+    ActiveRecord::Base.transaction do
+      if @user.update(users_params)
+        flash[:success] = "ユーザー情報を更新しました"
+        redirect_to @user
+      else
+        render 'edit'
+        raise ActiveRecord::Rollback
+      end
+  
+      if @attendance.update_attributes(attendances_params)
+        # started_at が存在する場合のみ finished_at を許可する
+        @attendance.update_attribute(:finished_at, nil) unless @attendance.started_at.present?
+      else
+        render :edit
+        raise ActiveRecord::Rollback
+      end
     end
   end
 
@@ -80,12 +91,16 @@ class UsersController < ApplicationController
   private
 
   def users_params
-   params.require(:user).permit(:name, :email, :department, :password, :password_confirmation)
+    params.require(:user).permit(:name, :email, :department, :password, :password_confirmation)
   end
 
   def basic_info_params
     params.require(:user).permit(:department, :basic_time, :work_time)
-  end  
+  end
+  
+  def attendances_params
+    params.require(:user).permit(attendances: [:started_at, :finished_at])[:attendances]
+  end
   
   def basic_work_time
     @a_finish_at -= @a_start_at 
@@ -99,8 +114,8 @@ class UsersController < ApplicationController
   end
   
   def correct_user
-  @user = User.find(params[:id])
-  redirect_to(root_url) unless current_user?(@user)
+    @user = User.find(params[:id])
+    redirect_to(root_url) unless current_user?(@user)
   end
   
   def user_admin
