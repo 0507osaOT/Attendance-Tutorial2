@@ -18,14 +18,32 @@
             <%= f.label :name, class: "label-#{yield(:class_text)}" %>
             <p><%= @user.name %></p>
 
+            <%= f.label :email, class: "label-#{yield(:class_text)}" %>
+            <%= f.text_field :email, class: "form-control" %>
+            
             <%= f.label :department, class: "label-#{yield(:class_text)}" %>
             <%= f.text_field :department, class: "form-control" %>
+            
+            <%= f.label :employeenumber, class: "label-#{yield(:class_text)}" %>
+            <%= f.text_field :employeenumber, class: "form-control" %>
+            
+            <%= f.label :cardID, class: "label-#{yield(:class_text)}" %>
+            <%= f.text_field :cardID, class: "form-control" %>
+            
+            <%= f.label :password, class: "label-#{yield(:class_text)}" %>
+            <%= f.text_field :password, class: "form-control" %>
+            
+            <%= f.label :password_confirmation, class: "label-#{yield(:class_text)}" %>
+            <%= f.text_field :password_confirmation, class: "form-control" %>
 
             <%= f.label :basic_time, class: "label-#{yield(:class_text)}" %>
             <%= f.time_field :basic_time, class: "form-control" %>
 
-            <%= f.label :work_time, class: "label-#{yield(:class_text)}" %>
-            <%= f.time_field :work_time, class: "form-control" %>
+            <%= f.label :started_at, class: "label-#{yield(:class_text)}" %>
+            <%= f.time_field :started_at, class: "form-control" %>
+            
+            <%= f.label :finished_at, class: "label-#{yield(:class_text)}" %>
+            <%= f.time_field :finished_at, class: "form-control" %>
 
             <div class="center">
               <%= f.submit yield(:button_text), class: "btn btn-primary btn-#{yield(:class_text)}" %>
