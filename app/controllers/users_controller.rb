@@ -9,13 +9,8 @@ class UsersController < ApplicationController
   
     # システム管理権限所有かどうか判定します。
   def index
-    @users = User.paginate(page: params[:page])
-    @users = @users.where('name LIKE ?', "%#{params[:search]}%") if params[:search].present?
     @users = User.all
-    @users = User.find(params[:id])
-     if @users.user == current_user
-        render "ユーザー覧"
-     end
+    @users = @users.where('name LIKE ?', "%#{params[:search]}%") if params[:search].present?
   end
   
   def show
@@ -88,6 +83,11 @@ class UsersController < ApplicationController
     redirect_to users_url
   end
   
+  def import
+    User.import(params[:file])
+    redirect_to root_url
+  end
+  
   private
 
   def users_params
@@ -107,10 +107,10 @@ class UsersController < ApplicationController
   end
   
   def logged_in_user
-   unless logged_in?
-    flash[:danger] = "ログインしてください。"
-    redirect_to login_url
-   end  
+     unless logged_in?
+      flash[:danger] = "ログインしてください。"
+      redirect_to login_url
+     end 
   end
   
   def correct_user

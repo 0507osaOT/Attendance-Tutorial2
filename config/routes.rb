@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   # get  '/user_attendances', to: 'attendances#update'
 
   resources :users do
+    collection {post :import}
     member do
       get 'edit_overwork_request'
       patch 'edit_overwork_request_info'

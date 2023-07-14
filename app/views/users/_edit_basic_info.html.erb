@@ -39,10 +39,10 @@
             <%= f.label :basic_time, class: "label-#{yield(:class_text)}" %>
             <%= f.time_field :basic_time, class: "form-control" %>
 
-            <%= f.label :started_at, class: "label-#{yield(:class_text)}" %>
+            <%= f.label :指定勤務開始時間, class: "label-#{yield(:class_text)}" %>
             <%= f.time_field :started_at, class: "form-control" %>
             
-            <%= f.label :finished_at, class: "label-#{yield(:class_text)}" %>
+            <%= f.label :指定勤務終了時間, class: "label-#{yield(:class_text)}" %>
             <%= f.time_field :finished_at, class: "form-control" %>
 
             <div class="center">
