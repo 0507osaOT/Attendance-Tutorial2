@@ -1,0 +1,23 @@
+<!-- app/views/users/attendance_at_work.html.erb -->
+
+<h1>出勤社員一覧</h1>
+<table>
+  <thead>
+    <tr>
+      <th>社員番号</th>
+      <th>名前</th>
+      <th>出勤時間</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @users.each do |user| %>
+      <% if user.attendances.first && user.attendances.first.started_at.present? %>
+        <tr>
+          <td><%= user.employee_number %></td>
+          <td><%= user.name %></td>
+          <td><%= user.attendances.first.started_at.strftime('%Y-%m-%d %H:%M:%S') %></td>
+        </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>

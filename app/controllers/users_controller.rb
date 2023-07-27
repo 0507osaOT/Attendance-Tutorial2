@@ -88,6 +88,11 @@ class UsersController < ApplicationController
     redirect_to root_url
   end
   
+  def attendance_at_work
+  # 出勤時間があるユーザーを取得する
+    @users = User.joins(:attendances).where.not(attendances: { started_at: nil, user_id: nil }).distinct
+  end
+  
   private
 
   def users_params

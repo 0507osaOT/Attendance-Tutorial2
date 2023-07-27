@@ -9,9 +9,11 @@ Rails.application.routes.draw do
   post   '/login', to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy'
   # get  '/user_attendances', to: 'attendances#update'
+  get '/attendance_at_work', to: 'users#attendance_at_work'
 
   resources :users do
     collection {post :import}
+
     member do
       get 'edit_overwork_request'
       patch 'edit_overwork_request_info'

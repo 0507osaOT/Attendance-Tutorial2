@@ -16,8 +16,8 @@
 </div>
 
 <%= form_with url: import_users_path do |form| %>
-  <%= form.file_field :file, accept: '.csv' %>
-  <%= form.submit "インポート" %>
+  <%= form.file_field :file, accept: '.CSV' %>
+  <%= form.submit "CSVインポート", class: "btn btn-primary" %>
 <% end %>
 
 <div class="col-md-10 col-md-offset-1">
