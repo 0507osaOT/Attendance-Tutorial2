@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   delete '/logout', to: 'sessions#destroy'
   # get  '/user_attendances', to: 'attendances#update'
   get '/attendance_at_work', to: 'users#attendance_at_work'
+  get '/update_attendance', to: 'users#update_attendance'
+  get '/correction', to: 'users#correction'
 
   resources :users do
     collection {post :import}

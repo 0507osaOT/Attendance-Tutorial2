@@ -89,8 +89,17 @@ class UsersController < ApplicationController
   end
   
   def attendance_at_work
-  # 出勤時間があるユーザーを取得する
-    @users = User.joins(:attendances).where.not(attendances: { started_at: nil, user_id: nil }).distinct
+  # 出勤時間のみ格納されている一般ユーザーを取得する
+    @users = User.joins(:attendances).where.not(attendances: { started_at: nil }).where.not(name: "Sample User")
+  # 他の処理があればここに追加
+  end
+  
+  def update_attendance
+  # ページだけ用意
+  end
+  
+  def correction
+  
   end
   
   private
