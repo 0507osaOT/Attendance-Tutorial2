@@ -1,0 +1,34 @@
+<!-- app/views/bases/index.html.erb -->
+<% provide(:title , "拠点情報一覧") %>
+  <h1>拠点一覧</h1>
+  <table class="table table-bordered table-condensed base-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th>拠点番号</th>
+        <th>拠点名</th>
+        <th>勤怠種類</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @bases.each do |base| %>
+        <tr class="active">
+          <td>
+            <div class="base-index">
+              <%= link_to "修正", edit_basis_path(base), class: "btn btn-lg btn-primary" %>
+            </div>
+          </td>
+          <td>
+            <div>
+              <%= link_to "削除", base, method: :delete, data: { confirm: "#{base.base_name}を削除してもよろしいですか？" }, class: "btn btn-lg btn-primary" %>
+            </div>
+          </td>
+          <td><%= base.base_number %></td>
+          <td><%= base.base_name %></td>
+          <td><%= base.attendance_type %></td>
+        </tr>
+      <% end %>  
+    </tbody>
+  </table>
+  <%= link_to "拠点情報追加", new_basis_path, class: "btn btn-lg btn-primary" %>

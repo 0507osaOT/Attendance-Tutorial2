@@ -8,14 +8,20 @@ Rails.application.routes.draw do
   get    '/login', to: 'sessions#new'
   post   '/login', to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy'
+  
+  # 以下の行を追加
+  resources :bases
+
   # get  '/user_attendances', to: 'attendances#update'
   get '/attendance_at_work', to: 'users#attendance_at_work'
   get '/update_attendance', to: 'users#update_attendance'
-  get '/correction', to: 'users#correction'
+  #get '/correction', to: 'users#correction'
+  get '/index', to: 'bases#index'
+  
 
   resources :users do
     collection {post :import}
-
+  
     member do
       get 'edit_overwork_request'
       patch 'edit_overwork_request_info'
