@@ -5,7 +5,7 @@
   <h1>検索結果</h1>
 <% end %>
 
-    <div class=" col-md-10 col-md-offset-8">
+<div class=" col-md-10 col-md-offset-8">
 
      <b>ユーザー名検索</b>
 
@@ -21,18 +21,7 @@
 <% end %>
 
 <div class="col-md-10 col-md-offset-1">
-  <table class="table table-condensed table-hover" id="table-users">
-    <thead>
-      <tr>
-        <th><%= User.human_attribute_name :name %></th>
-        <th class="center"><%= User.human_attribute_name :department %></th>
-        <% if current_user.admin? %>
-          <th class="center"><%= User.human_attribute_name :basic_time %></th>
-          <th class="center"><%= User.human_attribute_name :work_time %></th>
-        <% end %>
-        <th></th>
-      </tr>
-    </thead>
+  <table class="table table-condensed table-hover" id="table-users"
 
     <% @users.each do |user| %>
       <tr>
@@ -43,22 +32,49 @@
             <%= user.name %>
           <% end %>
         </td>
-        <td class="center"><%= user.department.present? ? user.department : "未所属" %></td>
-        <% if current_user.admin? %>
-          <td class="center"><%= format_basic_info(user.basic_time) %></td>
-          <td class="center"><%= format_basic_info(user.work_time) %></td>
-        <% end %>
-        <td class="center">
-          <% if current_user.admin? && !current_user?(user) %>
-            <%= link_to "基本情報編集", edit_basic_info_user_path(user), remote: true, class: "btn btn-success" %>
-            <%= link_to "削除", user, method: :delete,
-                data: { confirm: "削除してよろしいですか？" }, class: "btn btn-danger" %>
-          <% end %>
-        </td>
-      </tr>
+        <div class="user-name"><%= user.name %></div>
+              <%= link_to "削除", user, method: :delete,data: { confirm: "削除してよろしいですか？" }, class: "btn btn-danger" %>
+            
+            <div class="panel panel-default">
+   　　　　　　　　　<div class="panel-heading">
+  　　　　　　　　　　　　<button class="btn btn-primary btn-lg" data-toggle="collapse" data-target="#collapse-<%= user.id %>">編集</button>
+　　　　　　　</div>
+  　　　　     　　　<div class="collapse"    id="collapse-<%= user.id %>">
+                      <%= form_with(model: user, local: true) do |f| %>
+                        <%= render 'shared/error_messages', object: user %>
+                        <%= f.label :name, class: "label-#{yield(:class_text)}" %>
+                        <p><%= user.name %></p>
+                        <%= f.label :email, class: "label-#{yield(:class_text)}" %>
+                        <%= f.text_field :email, class: "form-control" %>
+                        <%= f.label :department, class: "label-#{yield(:class_text)}" %>
+                        <%= f.text_field :department, class: "form-control" %>
+                        <%= f.label :employeenumber, class: "label-#{yield(:class_text)}" %>
+                        <%= f.text_field :employeenumber, class: "form-control" %>
+                        <%= f.label :cardID, class: "label-#{yield(:class_text)}" %>
+                        <%= f.text_field :cardID, class: "form-control" %>
+                        <%= f.label :password, class: "label-#{yield(:class_text)}" %>
+                        <%= f.text_field :password, class: "form-control" %>
+                        <%= f.label :password_confirmation, class: "label-#{yield(:class_text)}" %>
+                        <%= f.text_field :password_confirmation, class: "form-control" %>
+                        <%= f.label :basic_time, class: "label-#{yield(:class_text)}" %>
+                        <%= f.time_field :basic_time, class: "form-control" %>
+                        <%= f.label :指定勤務開始時間, class: "label-#{yield(:class_text)}" %>
+                        <%= f.time_field :started_at, class: "form-control" %>
+                        <%= f.label :指定勤務終了時間, class: "label-#{yield(:class_text)}" %>
+                        <%= f.time_field :finished_at, class: "form-control" %>
+                        <div class="center">
+                          <%= f.submit yield(:button_text), class: "btn btn-primary btn-#{yield(:class_text)}" %>
+                          <button type="button" class="btn btn-default btn-<%= yield(:class_text) %>" data-dismiss="modal">
+                            キャンセル
+                          </button>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+　　　　　　
+            </div>
+          </div>
+        </div>
     <% end %>
   </table>
 </div>
-
-<!--モーダルウインドウ表示-->
-<div id="edit-basic-info" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

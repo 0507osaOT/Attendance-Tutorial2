@@ -69,6 +69,7 @@ class UsersController < ApplicationController
   end
 
   def edit_basic_info
+    @user = User.find(params[:id])
   end
 
   def edit_one_month
