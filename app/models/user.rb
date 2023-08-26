@@ -50,6 +50,8 @@ class User < ApplicationRecord
     update_attribute(:remember_digest, nil)
   end
   
+  self.per_page = 20 # ページごとの表示件数を設定
+  
   def self.search(search)
       if search
        @users = User.where(['name LIKE ?', "%#{search}%"])
@@ -60,7 +62,6 @@ class User < ApplicationRecord
   
   def self.import(file)
     CSV.foreach(file.path, headers: true) do |row|
-      #nameが見つからなければ新しく作成
       user = find_by(name: row["name"]) || new
       user.attributes = row.to_hash.slice(*updatable_attributes)
       user.save
@@ -68,6 +69,6 @@ class User < ApplicationRecord
   end
   
   def self.updatable_attributes
-    ["name","address","age","phone"]
+    ["name","email","affiliation","employee_number","uid","basic_work_time","designated_work_start_time","designated_work_end_time","superior","admin","password_digest"]
   end
 end

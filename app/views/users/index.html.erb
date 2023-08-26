@@ -1,7 +1,8 @@
 <% provide(:title, 'All Users') %>
+<% provide(:button_text, '編集する') %>
 <% if params[:search].blank? %>
   <h1>全てのユーザー覧</h1>
-<% else %>
+<% else %>     
   <h1>検索結果</h1>
 <% end %>
 
@@ -16,33 +17,24 @@
 </div>
 
 <%= form_with url: import_users_path do |form| %>
-  <%= form.file_field :file, accept: '.CSV' %>
+  <%= form.file_field :file, accept: 'text/csv' %>
   <%= form.submit "CSVインポート", class: "btn btn-primary" %>
 <% end %>
 
 <div class="col-md-10 col-md-offset-1">
-  <table class="table table-condensed table-hover" id="table-users"
-
     <% @users.each do |user| %>
-      <tr>
-        <td>
-          <% if current_user.admin? %>
-            <%= link_to user.name, user %>
-          <% else %>
-            <%= user.name %>
-          <% end %>
-        </td>
+          
         <div class="user-name"><%= user.name %></div>
               <%= link_to "削除", user, method: :delete,data: { confirm: "削除してよろしいですか？" }, class: "btn btn-danger" %>
             
             <div class="panel panel-default">
-   　　　　　　　　　<div class="panel-heading">
-  　　　　　　　　　　　　<button class="btn btn-primary btn-lg" data-toggle="collapse" data-target="#collapse-<%= user.id %>">編集</button>
+              <div class="panel-heading button-edit">
+                <button class="btn btn-primary btn-lg" data-toggle="collapse" data-target="#collapse-<%= user.id %>">編集</button>
 　　　　　　　</div>
-  　　　　     　　　<div class="collapse"    id="collapse-<%= user.id %>">
+                    <div class="collapse panel-body" id="collapse-<%= user.id%>">
                       <%= form_with(model: user, local: true) do |f| %>
                         <%= render 'shared/error_messages', object: user %>
-                        <%= f.label :name, class: "label-#{yield(:class_text)}" %>
+                        <%= f.label :name, class: "label-#{yield(:class_text)}" %>  
                         <p><%= user.name %></p>
                         <%= f.label :email, class: "label-#{yield(:class_text)}" %>
                         <%= f.text_field :email, class: "form-control" %>
@@ -63,18 +55,16 @@
                         <%= f.label :指定勤務終了時間, class: "label-#{yield(:class_text)}" %>
                         <%= f.time_field :finished_at, class: "form-control" %>
                         <div class="center">
-                          <%= f.submit yield(:button_text), class: "btn btn-primary btn-#{yield(:class_text)}" %>
+                          <%= f.submit yield(:button_text), class: "btn btn-primary btn-#{yield(:class_text)}"%>
                           <button type="button" class="btn btn-default btn-<%= yield(:class_text) %>" data-dismiss="modal">
                             キャンセル
                           </button>
                         </div>
                       <% end %>
                     </div>
-                  </div>
-　　　　　　
             </div>
-          </div>
-        </div>
     <% end %>
-  </table>
+    <div class="pagination">
+     <%= will_paginate @users %>
+    </div>
 </div>

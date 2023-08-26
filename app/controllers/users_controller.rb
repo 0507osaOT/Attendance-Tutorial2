@@ -1,7 +1,8 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
   before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :edit_user]
-  before_action :correct_user, only: [:edit, :update]
+  before_action :correct_user, only: [:edit]
+  before_action :admin_or_correct_user, only: [:update]
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info]
   before_action :set_one_month, only: [:show]
   before_action :user_admin, only: [:index]
@@ -11,6 +12,7 @@ class UsersController < ApplicationController
   def index
     @users = User.all
     @users = @users.where('name LIKE ?', "%#{params[:search]}%") if params[:search].present?
+    @users = @users.paginate(page: params[:page], per_page: 20)  # 20件ずつ表示（調整可）
   end
   
   def show
@@ -43,23 +45,25 @@ class UsersController < ApplicationController
   end
 
   def update
-    ActiveRecord::Base.transaction do
+      @user = User.find(params[:id])  # ユーザーのインスタンスを取得
+      @attendance = @user.attendances.find_by(id: params[:attendance_id])  # ユーザーの出勤情報のインスタンスを取得
+      
       if @user.update(users_params)
         flash[:success] = "ユーザー情報を更新しました"
-        redirect_to @user
+        
+        if current_user.admin?  #管理者の場合
+           redirect_to users_url
+        else
+           redirect_to @user
+        end
+      
       else
-        render 'edit'
-        raise ActiveRecord::Rollback
+         if current_user.admin?  #管理者の場合
+           redirect_to users_url
+         else
+           render :edit
+         end
       end
-  
-      if @attendance.update_attributes(attendances_params)
-        # started_at が存在する場合のみ finished_at を許可する
-        @attendance.update_attribute(:finished_at, nil) unless @attendance.started_at.present?
-      else
-        render :edit
-        raise ActiveRecord::Rollback
-      end
-    end
   end
 
   def destroy
@@ -85,8 +89,13 @@ class UsersController < ApplicationController
   end
   
   def import
-    User.import(params[:file])
-    redirect_to root_url
+    if params[:file].present?
+      User.import(params[:file])
+      flash[:success] = "CSVファイルのインポートが完了しました。"
+    else
+      flash[:danger] = "CSVファイルを選択してください。"
+    end
+    redirect_to users_url
   end
   
   def attendance_at_work

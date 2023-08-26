@@ -52,6 +52,25 @@ class AttendancesController < ApplicationController
     redirect_to attendances_edit_one_month_user_url(date: params[:date])
   end
 
+  def new_overtime_request
+    @user = User.find(params[:user_id])
+    @attendance = @user.attendances.find_by(worked_on: params[:date])
+    @overtime_request = OvertimeRequest.new
+  end
+  
+  def create_overtime_request
+    @user = User.find(params[:user_id])
+    @attendance = @user.attendances.find_by(worked_on: params[:date])
+    @overtime_request = OvertimeRequest.new(overtime_request_params)
+    
+    if @overtime_request.save
+      flash[:success] = "残業申請が送信されました。"
+      redirect_to user_path(@user, date: @attendance.worked_on)
+    else
+      render 'new_overtime_request'
+    end
+  end
+
   private
 
     # 1ヶ月分の勤怠情報を扱います。

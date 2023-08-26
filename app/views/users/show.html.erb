@@ -34,6 +34,7 @@
  ﻿<table class="table table-bordered table-condensed table-hover" id="table-attendances">	
     <thead>	
      <tr>
+      <th>残業申請</th> <!-- 追加 -->
       <th>日付</th>	
       <th>曜日</th>	
       <th>勤怠登録</th>	
@@ -44,7 +45,6 @@
      </tr>	
     </thead>
     <tbody>
-      
    　　<% @attendances.each do |day| %>
         <% css_class = 
           case %w{日 月 火 水 木 金 土}[day.worked_on.wday]
@@ -55,6 +55,9 @@
           end
         %>
       <tr>
+        <td>
+  　　　　　　<%= link_to "残業申請", new_overtime_request_user_path(@user), class: "btn btn-primary btn-attendance" %>
+  　     </td> <!-- 追加 -->
         <td><%= l(day.worked_on, format: :short) %></td>
         <td class="<%= css_class %>"><%= $days_of_the_week[day.worked_on.wday] %></td>
         <td>

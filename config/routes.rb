@@ -17,7 +17,6 @@ Rails.application.routes.draw do
   get '/update_attendance', to: 'users#update_attendance'
   #get '/correction', to: 'users#correction'
   get '/index', to: 'bases#index'
-  
 
   resources :users do
     collection {post :import}
@@ -30,6 +29,7 @@ Rails.application.routes.draw do
       get 'attendances/edit_one_month'
       patch 'attendances/update_one_month' # この行が追加対象です。
       get 'attendances/working'
+      get 'new_overtime_request', to: 'overtime_requests#new'
     end
     resources :attendances, only: :update
     resources :searches, only: :index
