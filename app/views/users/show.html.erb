@@ -55,9 +55,7 @@
           end
         %>
       <tr>
-        <td>
-  　　　　　　<%= link_to "残業申請", new_overtime_request_user_path(@user), class: "btn btn-primary btn-attendance" %>
-  　     </td> <!-- 追加 -->
+        <td><%= link_to "残業申請", new_overtime_request_user_path(@user), class: "btn btn-primary" %></td>
         <td><%= l(day.worked_on, format: :short) %></td>
         <td class="<%= css_class %>"><%= $days_of_the_week[day.worked_on.wday] %></td>
         <td>

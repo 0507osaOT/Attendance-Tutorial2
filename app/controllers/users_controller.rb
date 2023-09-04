@@ -12,7 +12,7 @@ class UsersController < ApplicationController
   def index
     @users = User.all
     @users = @users.where('name LIKE ?', "%#{params[:search]}%") if params[:search].present?
-    @users = @users.paginate(page: params[:page], per_page: 20)  # 20件ずつ表示（調整可）
+
   end
   
   def show
@@ -143,12 +143,12 @@ class UsersController < ApplicationController
   end
   
   def user_admin
-    @users = User.all
-      if  current_user.admin == false
-          redirect_to root_path
-      else
-          render action: "index"
-      end
+    @users = User.paginate(page: params[:page], per_page: 20)
+    if current_user.admin == false
+      redirect_to root_path
+    else
+      render action: "index"
+    end
   end
   
   def check_user_authorization
