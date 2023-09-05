@@ -22,7 +22,7 @@
 <% end %>
 
 <div class="col-md-10 col-md-offset-1">
-
+  <%= will_paginate %>
     <% @users.each do |user| %>
         <div class="user-name"><%= user.name %></div>
               <%= link_to "削除", user, method: :delete,data: { confirm: "削除してよろしいですか？" }, class: "btn btn-danger" %>
@@ -64,4 +64,5 @@
                     </div>
             </div>
     <% end %>
+  <%= will_paginate %>
 </div>

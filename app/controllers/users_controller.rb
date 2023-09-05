@@ -5,14 +5,13 @@ class UsersController < ApplicationController
   before_action :admin_or_correct_user, only: [:update]
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info]
   before_action :set_one_month, only: [:show]
-  before_action :user_admin, only: [:index]
   #before_action :check_user_authorization, only: [:index, :show]
   
     # システム管理権限所有かどうか判定します。
   def index
     @users = User.all
     @users = @users.where('name LIKE ?', "%#{params[:search]}%") if params[:search].present?
-
+    @users = User.paginate(page: params[:page], per_page: 20)  # 20件ずつ表示（調整可）
   end
   
   def show
