@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20230824152001) do
+ActiveRecord::Schema.define(version: 20230906141057) do
 
   create_table "attendances", force: :cascade do |t|
     t.date "worked_on"
@@ -24,28 +24,32 @@ ActiveRecord::Schema.define(version: 20230824152001) do
   end
 
   create_table "bases", force: :cascade do |t|
-    t.string "name"
-    t.string "attribute1"
-    t.string "attribute2"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "base_number"
+    t.string "base_number"
     t.string "base_name"
     t.string "attendance_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "email"
-    t.datetime "designated_work_start_time", null: false
-    t.datetime "designated_work_start_time", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "password_digest"
+    t.string "remember_digest"
     t.boolean "admin", default: false
-    t.string "affiliation"
-    t.datetime "basic_time", default: "2022-11-10 23:00:00"
-    t.datetime "work_time", default: "2022-11-10 22:30:00"
+    t.string "department"
+    t.datetime "basic_time", default: "2023-09-05 23:00:00"
+    t.datetime "work_time", default: "2023-09-05 22:30:00"
     t.string "employee_number"
     t.string "uid"
+    t.string "affiliation"
+    t.datetime "basic_work_time"
+    t.datetime "designated_work_start_time"
+    t.datetime "designated_work_end_time"
+    t.boolean "superior", default: false
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
 end
