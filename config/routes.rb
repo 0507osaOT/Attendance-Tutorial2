@@ -22,14 +22,25 @@ Rails.application.routes.draw do
     collection {post :import}
   
     member do
-      get 'edit_overwork_request'
-      patch 'edit_overwork_request_info'
+      #勤怠の基本情報編集
       get 'edit_basic_info'
       patch 'update_basic_info'
+      #勤怠編集
       get 'attendances/edit_one_month'
-      patch 'attendances/update_one_month' # この行が追加対象です。
+      patch 'attendances/update_one_month' 
+
+      get 'edit_overwork_request'
+      patch 'edit_overwork_request_info'
+      
       get 'attendances/working'
-      get 'new_overtime_request', to: 'overtime_requests#new'
+      #残業申請
+      get 'attendances/edit_overtime_application_req'
+      patch 'attendances/update_overtime_application_req'
+    end
+    resources :attendances do
+      member do
+        patch 'update_overtime_application_req'
+      end
     end
     resources :attendances, only: :update
     resources :searches, only: :index

@@ -1,0 +1,41 @@
+<!-- update_overtime_application_req.html.erb -->
+
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+
+          <% if @user.errors.any? %>
+            <!-- エラーメッセージを表示 -->
+            <div id="error_explanation">
+              <div class="alert alert-danger">
+                The form contains <%= pluralize(@user.errors.count, "error") %>.
+              </div>
+              <ul>
+                <% @user.errors.full_messages.each do |msg| %>
+                  <li><%= msg %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <% if flash[:success] %>
+            <!-- 成功メッセージを表示 -->
+            <div class="alert alert-success">
+              <%= flash[:success] %>
+            </div>
+          <% end %>
+
+          <!-- 他の必要な情報や表示内容を追加 -->
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

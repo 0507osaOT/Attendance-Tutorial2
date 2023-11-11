@@ -2,13 +2,13 @@
 <% provide(:button_text, '編集する') %>
 <% if params[:search].blank? %>
   <h1>全てのユーザー覧</h1>
-<% else %>     
+<% else %>
   <h1>検索結果</h1>
 <% end %>
 
 <div class=" col-md-10 col-md-offset-8">
 
-     <b>ユーザー名検索</b>
+<b>ユーザー名検索</b>
 
     <%= form_with url: users_path, method: :get, local: true do |f| %> <!--検索結果を表示したいurlの指定します-->
     <%= f.text_field :search %> <!--検索するワードを searchという架空のカラムに格納される-->
@@ -26,7 +26,7 @@
     <% @users.each do |user| %>
         <div class="user-name"><%= user.name %></div>
               <%= link_to "削除", user, method: :delete,data: { confirm: "削除してよろしいですか？" }, class: "btn btn-danger" %>
-            
+
             <div class="panel panel-default">
               <div class="panel-heading button-edit">
                 <button class="btn btn-primary btn-lg" data-toggle="collapse" data-target="#collapse-<%= user.id %>">編集</button>
@@ -34,7 +34,7 @@
                     <div class="collapse panel-body" id="collapse-<%= user.id%>">
                       <%= form_with(model: user, local: true) do |f| %>
                         <%= render 'shared/error_messages', object: user %>
-                        <%= f.label :name, class: "label-#{yield(:class_text)}" %>  
+                        <%= f.label :name, class: "label-#{yield(:class_text)}" %>
                         <p><%= user.name %></p>
                         <%= f.label :email, class: "label-#{yield(:class_text)}" %>
                         <%= f.text_field :email, class: "form-control" %>

@@ -57,18 +57,31 @@ class AttendancesController < ApplicationController
     @attendance = @user.attendances.find_by(worked_on: params[:date])
     @overtime_request = OvertimeRequest.new
   end
-  
+
   def create_overtime_request
     @user = User.find(params[:user_id])
     @attendance = @user.attendances.find_by(worked_on: params[:date])
     @overtime_request = OvertimeRequest.new(overtime_request_params)
-    
+
     if @overtime_request.save
       flash[:success] = "残業申請が送信されました。"
       redirect_to user_path(@user, date: @attendance.worked_on)
     else
-      render 'new_overtime_request'
+      render 'overtime_request'
     end
+  end
+
+  def edit_overtime_application_req
+    @user = User.find(params[:id])
+    #@attendance = Attendance.find_by(worked_on: params[:date])
+    @attendance = @user.attendances.find_by(worked_on: params[:date])
+    @date = params[:date].to_date
+  end
+
+  def update_overtime_application_req
+    @attendance = Attendance.find(params[:date_id])
+    @user = User.find(params[:id])
+    @date = params[:date]
   end
 
   private
@@ -85,7 +98,7 @@ class AttendancesController < ApplicationController
       unless current_user?(@user) || current_user.admin?
         flash[:danger] = "編集権限がありません。"
         redirect_to(root_url)
-      end  
+      end
     end
     def require_login
       unless logged_in?
