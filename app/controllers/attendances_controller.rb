@@ -76,12 +76,37 @@ class AttendancesController < ApplicationController
     #@attendance = Attendance.find_by(worked_on: params[:date])
     @attendance = @user.attendances.find_by(worked_on: params[:date])
     @date = params[:date].to_date
+    @superiors = User.where(superior: true).where.not(name: @user.name)
   end
 
   def update_overtime_application_req
-    @attendance = Attendance.find(params[:date_id])
     @user = User.find(params[:id])
-    @date = params[:date]
+    @attendance = Attendance.find_by(worked_on: params[:attendance][:date]&.to_date, user_id: @user.id)
+
+    if @attendance
+      # Update attendance with overtime information
+      @attendance.update(
+        overtime: params[:attendance][:overtime],  # "overtime_at" ではなく "overtime" を使用
+        approval: params[:attendance][:approval],
+        overtime_content: params[:attendance][:overtime_content],
+        overtime_instructor: params[:attendance][:overtime_instructor],
+        status: "申請中")
+
+      flash[:success] = "残業申請を受け付けました。"
+      redirect_to user_url
+    else
+      flash[:danger] = "勤怠データが見つかりません。"
+      redirect_to user_url
+    end
+  end
+
+  ef edit_overtime_applied_req_user_path
+    @user = User.find(params[:id])
+    @date = params[:date].to_date
+    @attendance = @user.attendances.find_by(worked_on: @date )
+  end
+
+  def update_overtime_applied_req_user_path
   end
 
   private

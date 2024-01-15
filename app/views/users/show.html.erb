@@ -3,7 +3,7 @@
   <table class="table table-bordered table-condensed user-table">
     <tr>
       <td><%= link_to " ⇦ ", user_path(date: @first_day.prev_month), class: "btn btn-primary btn-attendance" %>
-        <%= l(@first_day, format: :middle) %>　時間管理表
+        <%= l(@first_day, format: :middle) %> 時間管理表
       <%= link_to " ⇨ ", user_path(date: @first_day.next_month), class: "btn btn-primary btn-attendance" %>
       </td>
       <td>指定勤務時間：<%= format_basic_info(@user.work_time) %></td>
@@ -19,18 +19,32 @@
     </tr>
   </table>
 </div>
-<div>
-  <p>【所属長承認申請のお知らせ】</p>
-  <p>【勤怠変更申請のお知らせ】</p>
-  <p>【残業申請のお知らせ】</p>
-</div>
+
+<% if current_user.superior %>
+ <% if true %>
+  <%= link_to "【所属長承認申請のお知らせ】", "#" %><br/>
+ <% end %>
+  <%= link_to "【勤怠変更申請のお知らせ】", attendances_show_attendance_chg_req_user_path, remote: true %>
+  
+  <% if  @attendance_chg_req_sum > 0 %>
+    <span class = "tsuuti" ><%= @attendance_chg_req_sum %>件の通知があります。</span>
+  <% end %>
+  <br/>
+  <%= link_to "【残業申請のお知らせ】", attendances/edit_overtime_applied_req_path, remote: true %>
+  
+  <% if  @attendance_chg_req_sum > 0 %>
+    <span class = "tsuuti"><%= @attendance_chg_req_sum %>件の通知があります。</span>
+  <% end %>
+  
+  <br/>
+  <br/>
+<% end %>
 
 <div class="btn-users-show">
-  <%= link_to "1ヶ月の勤怠編集へ", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary btn-attendance" %>
-  <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary btn-attendance" %>
-  <%= link_to "勤怠修正ログ（承認済み）", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary btn-attendance" %>
+  <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-info" %>
+  <%= link_to "CSV出力", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-info" %>
+  <%= link_to "勤怠修正ログ(承認済み)", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-info" %>
 </div>
-<div>
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">	
     <thead>	
         <tr>

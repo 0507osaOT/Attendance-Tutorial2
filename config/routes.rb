@@ -32,6 +32,9 @@ Rails.application.routes.draw do
       get 'edit_overwork_request'
       patch 'edit_overwork_request_info'
       
+       # 勤怠変更申請
+       get 'attendances/show_attendance_chg_req'
+
       get 'attendances/working'
       #残業申請
       get 'attendances/edit_overtime_application_req'
@@ -42,6 +45,9 @@ Rails.application.routes.draw do
         patch 'update_overtime_application_req'
       end
     end
+    # 申請された上長ユーザー画面
+    get 'attendances/edit_overtime_applied_req'
+    patch 'attendances/update_overtime_applied_req'
     resources :attendances, only: :update
     resources :searches, only: :index
   end

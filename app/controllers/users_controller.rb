@@ -6,17 +6,18 @@ class UsersController < ApplicationController
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info]
   before_action :set_one_month, only: [:show]
   #before_action :check_user_authorization, only: [:index, :show]
-  
+
     # システム管理権限所有かどうか判定します。
   def index
     @users = User.all
     @users = @users.where('name LIKE ?', "%#{params[:search]}%") if params[:search].present?
     @users = User.paginate(page: params[:page], per_page: 20)  # 20件ずつ表示（調整可）
   end
-  
+
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
-  
+    @attendance_chg_req_sum = Attendance.where(status: "申請中",overtime_instructor: @user.name).count
+
     # ログインユーザーが管理者または自分自身の場合は処理を終了する
     return if current_user.admin? || current_user == @user
     # それ以外の場合は権限エラーメッセージを表示する

@@ -3,13 +3,13 @@
   <div class="modal-content">
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">×</span>
+        <span aria-hidden="true"></span>
       </button>
     </div>
     <div class="modal-body">
       <div class="row">
         <div class="col-md-6 col-md-offset-3">
-<%= form_with(model: @attendance, url: attendances_edit_overtime_application_req_user_path(@user), method: :patch, local: true) do |f| %>
+<%= form_with(model: @attendance, url: attendances_update_overtime_application_req_user_path(@user), method: :patch, local: true) do |f| %>
       
           <h1 class= "modal-title">【勤怠残業申請】</h1>
             
@@ -27,11 +27,12 @@
              <tbody>
               <tr>
                 <td><%= l(@date, format: :short) %></td>
+                <%= f.hidden_field :date, :value => (@date) %>
                 <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
                 <td><%= f.time_field :overtime, required: true, class: "form-contcol" %></td>
                 <td><%= f.check_box :approval, class: "form-contcol" %></td>
                 <td><%= f.text_field :overtime_content, class: "form-contcol" %></td>
-                <td><%= f.select :status, [["上長A"],["上長B"]], {}, { class: "form-contcol" } %></td>
+                <td><%= f.collection_select :overtime_instructor, @superiors, :name, :name, {include_blank: ""},{required: true, class: "form-control"} %></td>
               </tr>
              </tbody>
             </table>
