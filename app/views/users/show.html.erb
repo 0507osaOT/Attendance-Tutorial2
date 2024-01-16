@@ -30,7 +30,7 @@
     <span class = "tsuuti" ><%= @attendance_chg_req_sum %>件の通知があります。</span>
   <% end %>
   <br/>
-  <%= link_to "【残業申請のお知らせ】", attendances/edit_overtime_applied_req_path, remote: true %>
+  <%= link_to "【残業申請のお知らせ】", edit_overtime_applied_req_path, remote: true %>
   
   <% if  @attendance_chg_req_sum > 0 %>
     <span class = "tsuuti"><%= @attendance_chg_req_sum %>件の通知があります。</span>

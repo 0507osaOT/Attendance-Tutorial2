@@ -1,0 +1,2 @@
+$("#edit_overtime_applied_req").html("<%= escape_javascript(render 'edit_overtime_applied_req') %>");
+$("#edit_overtime_applied_req").modal("show");

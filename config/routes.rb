@@ -47,7 +47,7 @@ Rails.application.routes.draw do
     end
     # 申請された上長ユーザー画面
     get 'attendances/edit_overtime_applied_req'
-    patch 'attendances/update_overtime_applied_req'
+    patch 'attendances/edit_overtime_applied_req'
     resources :attendances, only: :update
     resources :searches, only: :index
   end
