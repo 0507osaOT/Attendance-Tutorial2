@@ -27,7 +27,7 @@ Rails.application.routes.draw do
       patch 'update_basic_info'
       #勤怠編集
       get 'attendances/edit_one_month'
-      patch 'attendances/update_one_month' 
+      patch 'attendances/update_one_month'
 
       get 'edit_overwork_request'
       patch 'edit_overwork_request_info'
@@ -40,8 +40,12 @@ Rails.application.routes.draw do
       get 'attendances/edit_overtime_application_req'
       patch 'attendances/update_overtime_application_req'
 
+      #”勤怠変更申請のお知らせ”のモーダル
+      get 'attendances/show_change_modal'
+
       #”残業申請のお知らせ”のモーダル
       get 'attendances/show_overtime_modal'
+
     end
     resources :attendances do
       member do

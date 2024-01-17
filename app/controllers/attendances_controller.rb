@@ -100,9 +100,18 @@ class AttendancesController < ApplicationController
     end
   end
 
-  def show_overtime_modal
-    
+  def show_approval_modal
+
   end
+
+  def show_change_modal
+
+  end
+
+  def show_overtime_modal
+
+  end
+
   private
 
     # 1ヶ月分の勤怠情報を扱います。

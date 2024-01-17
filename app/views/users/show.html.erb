@@ -24,7 +24,7 @@
   <% if true %>
     <%= link_to "【所属長承認申請のお知らせ】", "#" %><br/>
   <% end %>
-  <%= link_to "【勤怠変更申請のお知らせ】", attendances_show_attendance_chg_req_user_path, remote: true %>
+  <%= link_to "【勤怠変更申請のお知らせ】", attendances_show_change_modal_user_path, remote: true %>
   
   <% if @attendance_chg_req_sum.present? && @attendance_chg_req_sum > 0 %>
     <span class="tsuuti"><%= @attendance_chg_req_sum %>件の通知があります。</span>
@@ -134,4 +134,5 @@
 <!---モーダルウィンドウ表示--->
 <div id="attendance_chg_req" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="edit_overtime_application_req" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="show_change_modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="show_overtime_modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
