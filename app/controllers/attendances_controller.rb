@@ -100,15 +100,9 @@ class AttendancesController < ApplicationController
     end
   end
 
-  ef edit_overtime_applied_req_user_path
-    @user = User.find(params[:id])
-    @date = params[:date].to_date
-    @attendance = @user.attendances.find_by(worked_on: @date )
+  def show_overtime_modal
+    
   end
-
-  def update_overtime_applied_req_user_path
-  end
-
   private
 
     # 1ヶ月分の勤怠情報を扱います。

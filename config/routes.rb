@@ -39,6 +39,9 @@ Rails.application.routes.draw do
       #残業申請
       get 'attendances/edit_overtime_application_req'
       patch 'attendances/update_overtime_application_req'
+
+      #”残業申請のお知らせ”のモーダル
+      get 'attendances/show_overtime_modal'
     end
     resources :attendances do
       member do
@@ -46,7 +49,7 @@ Rails.application.routes.draw do
       end
     end
     # 申請された上長ユーザー画面
-    get 'attendances/edit_overtime_applied_req'
+    get 'attendances/edit_overtime_application_req'
     patch 'attendances/edit_overtime_applied_req'
     resources :attendances, only: :update
     resources :searches, only: :index

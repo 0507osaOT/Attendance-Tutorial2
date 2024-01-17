@@ -106,3 +106,17 @@ p {
 .tsuuti {
   color: red;
 }
+
+/* モーダルウインドウの位置調整 */
+.modal-body{
+  
+td,th{
+  text-align: center;
+  .modal-note{
+    width: 100%;
+  }
+  .modal-time{
+    width: 100%;
+  }
+}
+}
