@@ -82,7 +82,7 @@ class AttendancesController < ApplicationController
   def update_overtime_application_req
     @user = User.find(params[:id])
     @attendance = Attendance.find_by(worked_on: params[:attendance][:date]&.to_date, user_id: @user.id)
-
+  
     if @attendance
       # Update attendance with overtime information
       @attendance.update(
@@ -109,8 +109,10 @@ class AttendancesController < ApplicationController
   end
 
   def show_overtime_modal
-
+    @user = User.find(params[:id])
+    @attendances = Attendance.where(status: "申請中", overtime_instructor: @user.name )
   end
+
 
   private
 
