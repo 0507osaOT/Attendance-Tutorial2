@@ -1,3 +1,5 @@
+
+<!-- _show_change_modal.html.erb -->
 <% provide(:class_text, 'basic-info') %>
 <% provide(:button_text, '更新') %>
 
@@ -7,14 +9,64 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
-    </div> 
+    </div>
     <div class="modal-body">
-     
+
       <div class="center">
-      <h3 class="modal-title">【勤怠変更申請】</h3>
-      </div>
-
-
+       <%= form_with(model: @user, url: attendances_update_overtime_application_req_user_path(@user), method: :patch, local: true) do |f| %> 
+        <% @attendances.each do |attendance| %>
+          <h3 class="modal-title">【テストからの勤怠変更申請】</h3>
+            <table class= "table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th rowspan="3"> 日付 </th>
+                  <th rowspan="3"> 曜日 </th>
+                  <th colspan="4"> 変更前 </th>
+                  <th colspan="4"> 変更後 </th>
+                  <th rowspan="3"> 備考 </th>
+                  <th rowspan="3"> 指示者確認㊞ </th>
+                  <th rowspan="3"> 変更 </th>
+                  <th rowspan="3"> 勤怠を確認する </th>
+                </tr>
+                <tr>
+                  <th colspan="2">出社</th>
+                  <th colspan="2">退社</th>
+                  <th colspan="2">出社</th>
+                  <th colspan="2">退社</th>
+                </tr>
+                <tr>
+                  <th>時</th>
+                  <th>分</th>
+                  <th>時</th>
+                  <th>分</th>
+                  <th>時</th>
+                  <th>分</th>
+                  <th>時</th>
+                  <th>分</th>
+                </tr>
+                  <tbody>
+                    <td><%= l(attendance[:worked_on].to_date, format: :short) %></td>
+                    <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <%# <td><%= f.time_field :overtime, required: true, class: "show_overtime_modal" </td> %>
+                    <td><%= f.text_field :overtime_content, class: "show_change_modal" %></td>
+                    <td><%= f.select :status, [["なし", "なし"],["申請中", "申請中"], ["承認", "承認"], ["否認", "否認"]], { include_blank: "" }, { required: true, class: "show_change_modal" } %></td>
+                    <td><%= f.check_box :approval, class: "show_change_modal" %></td>
+                    <td><%= f.submit "確認", class: "btn btn-primary btn-sm" %></td>
+                  </tbody>
+              </thead>
+          </table>
+       <% end %>
+       <%= f.submit "変更を送信する", class: "btn btn-primary btn-block" %>
+      <% end %>
+    </div>
     </div>
   </div>
 </div>

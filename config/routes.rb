@@ -40,11 +40,15 @@ Rails.application.routes.draw do
       get 'attendances/edit_overtime_application_req'
       patch 'attendances/update_overtime_application_req'
 
+      #”勤怠変更申請者の勤怠確認
+      get 'show_attendances_status_req'
+
       #”勤怠変更申請のお知らせ”のモーダル
       get 'attendances/show_change_modal'
 
       #”残業申請のお知らせ”のモーダル
       get 'attendances/show_overtime_modal'
+
 
     end
     resources :attendances do

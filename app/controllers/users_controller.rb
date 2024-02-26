@@ -1,10 +1,10 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
-  before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :edit_user]
+  before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :show_attendances_status_req]
+  before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :edit_user, ]
   before_action :correct_user, only: [:edit]
   before_action :admin_or_correct_user, only: [:update]
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info]
-  before_action :set_one_month, only: [:show]
+  before_action :set_one_month, only: [:show, :show_attendances_status_req]
   #before_action :check_user_authorization, only: [:index, :show]
 
     # システム管理権限所有かどうか判定します。
@@ -110,6 +110,21 @@ class UsersController < ApplicationController
   
   def correction
   
+  end
+
+  def set_one_month
+    # 今月の初日と最終日を取得
+    @first_day = Date.current.beginning_of_month
+    @last_day = Date.current.end_of_month
+    
+    # ログインユーザーの今月の出勤情報を取得し、@attendances 変数に設定する
+    @attendances = current_user.attendances.where(worked_on: @first_day..@last_day)
+  end
+
+  def show_attendances_status_req
+    @worked_sum = @attendances.where.not(started_at: nil).count
+    @attendance_chg_req_sum = Attendance.where(status: "申請中",overtime_instructor: @user.name).count
+
   end
   
   private

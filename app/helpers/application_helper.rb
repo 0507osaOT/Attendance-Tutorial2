@@ -9,5 +9,16 @@ module ApplicationHelper
       page_name + " | " + base_title # 文字列を連結して返す
     end
   end
+
+  # 時間外時間を算出
+  def calc_overtime(overtime, endtime)
+    # 『終了予定時間』を「時」に単位変換
+    h1 = overtime.hour + (overtime.min.to_f / 60)
+    # 『指定勤務終了時間』を「時」に単位変換
+    h2 = endtime.hour + (endtime.min.to_f / 60)
+    
+    # 戻り値として『時間外時間』を返す（時間外時間 ＝ 終了予定時間 − 指定勤務終了時間）
+    h1 - h2
+  end
 end
 
