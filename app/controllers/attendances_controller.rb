@@ -80,8 +80,9 @@ class AttendancesController < ApplicationController
   end
 
   def update_overtime_application_req
+    byebug
     @user = User.find(params[:id])
-    @attendance = Attendance.find_by(worked_on: params[:attendance][:date]&.to_date, user_id: @user.id)
+    @attendance = Attendance.find_by(worked_on: params[:date]&.to_date, user_id: @user.id)
   
     if @attendance
       # Update attendance with overtime information
@@ -114,6 +115,49 @@ class AttendancesController < ApplicationController
     @applicants = User.joins(:attendances).where(attendances: {status: "申請中", overtime_instructor: @user.name}).distinct
   end
 
+  # 残業申請の承認処理
+  def apply_overtime_req
+    # 承認情報更新フラグ
+    apply_flg = false
+
+    ActiveRecord::Base.transaction do   # トランザクションを開始します。
+      # 残業申請の承認処理
+      overtime_attendances_application_params.each do |id, item|
+        #　checkboxにチェックあり？
+        if item[:overtime_chg_permission] == "1"
+
+          overtime_attendance = Attendance.find(id)
+
+          case item[:overtime_approval_status]
+          when APPROVAL_STS_OK    # 承認
+            overtime_attendance.overtime_approval_status = APPROVAL_STS_OK
+            overtime_attendance.overtime_chg_permission = true
+            apply_flg = true
+
+          when APPROVAL_STS_NG, APPROVAL_STS_NON    # 否認、なし
+            overtime_attendance.overtime_approval_status = item[:overtime_approval_status]
+            overtime_attendance.overtime_chg_permission = true
+            apply_flg = true
+
+          else
+            # 何もしない
+          end
+
+          # DBへ更新情報を記録
+          overtime_attendance.save!
+        end
+      end
+    end
+
+    if apply_flg
+      flash[:success] = "残業申請について、指示者確認情報を更新しました。"
+    end
+    redirect_to user_url(date: params[:date])
+
+    rescue ActiveRecord::RecordInvalid
+      flash[:danger] = "無効なデータがあったため、更新をキャンセルしました。"
+      redirect_to user_url(date: params[:date])
+  end
 
   private
 
@@ -121,7 +165,13 @@ class AttendancesController < ApplicationController
     def attendances_params
       params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
     end
-    # beforeフィルター
+    # 残業申請の承認情報を扱います。
+    def overtime_application_params
+      params.require(:user).permit(attendances: [:overtime_approval_status, :overtime_chg_permission, :user_id])[:attendances]
+    end
+    # def overtime_attendances_application_params
+    #   params.require(:user).permit(attendances: [:overtime_approval_status, :overtime_chg_permission, :user_id])[:attendances]
+    #      end
 
     # 管理権限者、または現在ログインしているユーザーを許可します。
     def admin_or_correct_user
