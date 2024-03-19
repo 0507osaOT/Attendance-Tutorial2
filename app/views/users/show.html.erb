@@ -95,14 +95,15 @@
         <td><%= l(day.started_at.floor_to(15.minutes), format: :hour) if day.started_at.present? %></td><%# 【4】出勤時間 [時] %>
         <td><%= l(day.started_at.floor_to(15.minutes), format: :min) if day.started_at.present? %></td><%# 【5】出勤時間 [分] %>
         <td>
-            <% if btn_text = attendance_state(day) %>
+            <% btn_text = attendance_state(day) %>
+            <% if btn_text == "出勤" %>
             <%= link_to "#{btn_text}登録", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" %>
             <% end %>
         </td><%# 【6】出社ボタン %>
         <td><%= l(day.finished_at.floor_to(15.minutes), format: :hour) if day.finished_at.present? %></td><%# 【7】退勤時間 [時] %>
         <td><%= l(day.finished_at.floor_to(15.minutes), format: :min) if day.finished_at.present? %></td><%# 【8】退勤時間 [時] %>
         <td>
-            <% if btn_text = attendance_state(day) %>
+            <% if btn_text == "退勤" %>
             <%= link_to "#{btn_text}登録", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" %>
             <% end %>
         </td><%# 【6】退社ボタン %>
