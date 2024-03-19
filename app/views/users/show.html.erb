@@ -1,3 +1,4 @@
+<%# show.html.erb %>
 <% provide(:title, @user.name) %>
 <div>
   <table class="table table-bordered table-condensed user-table">
@@ -88,31 +89,38 @@
           end
         %>
       <tr>
-        <td><%= link_to "残業申請",attendances_edit_overtime_application_req_user_path(@user,date: day.worked_on),remote: true, class: "btn btn-primary" %></td>
-        <td><%= l(day.worked_on, format: :short) %></td>
-        <td class="<%= css_class %>"><%= $days_of_the_week[day.worked_on.wday] %></td>
+        <td><%= link_to "残業申請",attendances_edit_overtime_application_req_user_path(@user,date: day.worked_on),remote: true, class: "btn btn-primary" %></td><%# 【1】残業申請 %>
+        <td><%= l(day.worked_on, format: :short) %></td><%# 【2】日付 %>
+        <td class="<%= css_class %>"><%= $days_of_the_week[day.worked_on.wday] %></td><%# 【３】曜日 %>
+        <td><%= l(day.started_at.floor_to(15.minutes), format: :hour) if day.started_at.present? %></td><%# 【4】出勤時間 [時] %>
+        <td><%= l(day.started_at.floor_to(15.minutes), format: :min) if day.started_at.present? %></td><%# 【5】出勤時間 [分] %>
         <td>
-          <% if btn_text = attendance_state(day) %>
+            <% if btn_text = attendance_state(day) %>
             <%= link_to "#{btn_text}登録", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" %>
-          <% end %>
-        </td>
-        <td><%= l(day.started_at.floor_to(15.minutes), format: :time) if day.started_at.present? %></td>
-        <td><%= l(day.finished_at.floor_to(15.minutes), format: :time) if day.finished_at.present? %></td>
+            <% end %>
+        </td><%# 【6】出社ボタン %>
+        <td><%= l(day.finished_at.floor_to(15.minutes), format: :hour) if day.finished_at.present? %></td><%# 【7】退勤時間 [時] %>
+        <td><%= l(day.finished_at.floor_to(15.minutes), format: :min) if day.finished_at.present? %></td><%# 【8】退勤時間 [時] %>
+        <td>
+            <% if btn_text = attendance_state(day) %>
+            <%= link_to "#{btn_text}登録", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" %>
+            <% end %>
+        </td><%# 【6】退社ボタン %>
         <td>
           <% if day.started_at.present? && day.finished_at.present? %>
             <%= str_times = working_times(day.started_at.floor_to(15.minutes), day.finished_at.floor_to(15.minutes)) %>
             <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
           <% end %>
-        </td>
-        <td><%= day.note %></td>
-        <td></td>
-        <td></td>
-        <td> </td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td> </td>
+        </td><%# 【10】在社時間 %>
+        <td><%= day.note %></td><%# 【11】備考 %>
+        <td><%= l(day.overtime.floor_to(15.minutes), format: :hour) if day.overtime.present? %></td><%# 【12】終了予定時間：時 %>
+        <td><%= l(day.overtime.floor_to(15.minutes), format: :min) if day.overtime.present? %></td><%# 【13】終了予定時間：分 %>
+        <td><% if day.overtime.present? %>
+             <%= calc_overtime(day.overtime, @user.designated_work_end_time).round(2) %>
+            <% end %>
+        </td><%# 【14】時間外時間 %>
+        <td><%= day.overtime_content.present? ? day.overtime_content : "-" %></td><%# 【14】業務処理内容 %>
+        <td><%= day.status.present? ? day.status : "-" %></td><%# 【15】指示者確認印 %>
       </tr>
     <% end %>
     </tbody>
