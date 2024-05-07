@@ -1,0 +1,2 @@
+class MonthlyAttendance < ApplicationRecord
+end

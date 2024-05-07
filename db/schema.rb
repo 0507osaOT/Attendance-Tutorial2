@@ -10,10 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20240128140211) do
+ActiveRecord::Schema.define(version: 20240405053354) do
 
-# Could not dump table "attendances" because of following StandardError
-#   Unknown type 'strin' for column 'status'
+  create_table "attendances", force: :cascade do |t|
+    t.date "worked_on"
+    t.datetime "started_at"
+    t.datetime "finished_at"
+    t.string "status"
+    t.string "note"
+    t.integer "user_id"
+    t.datetime "overtime"
+    t.string "approval"
+    t.string "overtime_content"
+    t.string "overtime_instructor"
+    t.index ["user_id"], name: "index_attendances_on_user_id"
+  end
 
   create_table "bases", force: :cascade do |t|
     t.string "base_number"
@@ -21,6 +32,15 @@ ActiveRecord::Schema.define(version: 20240128140211) do
     t.string "attendance_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "monthly_attendances", force: :cascade do |t|
+    t.string "month"
+    t.string "year"
+    t.string "instructor"
+    t.string "master_status"
+    t.integer "user_id"
+    t.index ["user_id"], name: "index_monthly_attendances_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -32,8 +52,8 @@ ActiveRecord::Schema.define(version: 20240128140211) do
     t.string "remember_digest"
     t.boolean "admin", default: false
     t.string "department"
-    t.datetime "basic_time", default: "2024-03-18 23:00:00"
-    t.datetime "work_time", default: "2024-03-18 22:30:00"
+    t.datetime "basic_time", default: "2024-04-16 23:00:00"
+    t.datetime "work_time", default: "2024-04-16 22:30:00"
     t.string "employee_number"
     t.string "uid"
     t.string "affiliation"

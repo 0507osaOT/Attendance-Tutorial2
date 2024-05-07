@@ -1,5 +1,5 @@
 class AttendancesController < ApplicationController
-  before_action :set_user, only: [:edit_one_month, :update_one_month]
+  before_action :set_user, only: [:edit_one_month, :update_one_month, :show]
   before_action :logged_in_user, only: [:update, :edit_one_month]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
@@ -31,6 +31,8 @@ class AttendancesController < ApplicationController
   end
 
   def update_one_month
+    apply_flg = false  # apply_flg を定義
+
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       attendances_params.each do |id, item|
         attendance = Attendance.find(id)
@@ -43,13 +45,16 @@ class AttendancesController < ApplicationController
         else
           attendance.update_attributes!(item) unless attendance.worked_on > Date.today #当日以降の勤怠は更新しないようにする
         end
+      end
+
+      apply_flg = true # トランザクションが正常に終了した場合にフラグを設定
+
+      flash[:success] = "1ヶ月分の勤怠情報を更新しました。"
+      redirect_to user_url(date: params[:date])
+    rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
+      flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
+      redirect_to attendances_edit_one_month_user_url(date: params[:date])
     end
-  end
-    flash[:success] = "1ヶ月分の勤怠情報を更新しました。"
-    redirect_to user_url(date: params[:date])
-  rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
-    flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
-    redirect_to attendances_edit_one_month_user_url(date: params[:date])
   end
 
   def new_overtime_request
@@ -101,13 +106,14 @@ class AttendancesController < ApplicationController
     end
   end
 
-  def show_approval_modal
-
+  def show_monthly_attendances_modal
+    @user = User.find(params[:id])
+    @monthly_attendances = User.joins(:monthly_attendances).where(monthly_attendances: {master_status: "申請中", instructor:@user.name}).distinct
   end
 
   def show_change_modal
     @user = User.find(params[:id])
-    @attendances = Attendance.all
+    @attendances = @user.attendances.distinct
   end
 
   def show_overtime_modal
@@ -157,7 +163,30 @@ class AttendancesController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash[:danger] = "無効なデータがあったため、更新をキャンセルしました。"
       redirect_to user_url(date: params[:date])
+    end
+
+  def send_monthly_attendance_request
+    #byebug
+    @user = User.find(params[:id])
+    @date = params[:user][:date].presence || Date.current # params[:date]がnilの場合は、現在の日付を使用する
+    @month = @date.to_date.month
+    @year = @date.to_date.year
+    monthly_attendance = MonthlyAttendance.find_or_create_by(user_id: @user.id, month: @month, year: @year)
+    
+    if monthly_attendance.persisted?
+      #申請先の上長
+      monthly_attendance.instructor = params[:user][:approval_instructor]
+      #申請ステータス
+      monthly_attendance.master_status = "申請中"
+      monthly_attendance.save
+      flash[:success] = "1ヶ月分の勤怠申請を送信しました。"
+    else
+      flash[:danger] = "1ヶ月の勤怠申請に失敗しました。"
+    end
+    
+    redirect_to user_url(date: @date)
   end
+  
 
   private
 
@@ -185,3 +214,4 @@ class AttendancesController < ApplicationController
       end
     end
 end
+

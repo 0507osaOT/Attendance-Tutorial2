@@ -39,6 +39,8 @@ Rails.application.routes.draw do
       #残業申請
       get 'attendances/edit_overtime_application_req'
       patch 'attendances/update_overtime_application_req'
+      #1ヶ月の勤怠承認
+      get 'attendances/show_month_approval_req'
 
 
       #”勤怠変更申請者の勤怠確認
@@ -50,6 +52,13 @@ Rails.application.routes.draw do
       #”残業申請のお知らせ”のモーダル
       get 'attendances/show_overtime_modal'
       patch 'attendances/update_overtime_modal'
+
+      #”所属長承認申請のお知らせ”のモーダル
+      get 'attendances/show_monthly_attendances_modal'
+      patch 'attendances/update_monthly_attendances_modal'
+      
+      #1ヶ月分の勤怠申請
+      patch '/attendances/send_monthly_attendance_request', to: 'attendances#send_monthly_attendance_request', as: 'send_monthly_attendance_request'
 
     end
     resources :attendances do

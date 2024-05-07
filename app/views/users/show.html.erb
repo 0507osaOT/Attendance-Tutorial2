@@ -43,6 +43,7 @@
   <br/>
 <% end %>
 
+<%# <%= form_with(model: @attendance, url: attendances_show_month_approval_req_user_path(@user), method: :patch, local: true) do |f| %>
 <div class="btn-users-show">
   <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-info" %>
   <%= link_to "CSV出力", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-info" %>
@@ -127,23 +128,32 @@
     </tbody>
     
     <tfoot>
-      <!--rowspan:縦結合、colspan：横結合-->
-      <tr>
-        <td rowspan="2"></td>
-        <td colspan="2">累計日数</td>
-        <td colspan="2">総合勤務時間</td>
-        <td colspan="2">累計在社時間</td>
-        <td rowspan="2"></td>
-        <td rowspan="2"></td>
-      </tr>
-      
+      <%= form_with(model: @user, url: send_monthly_attendance_request_user_path(@user), method: :patch, local: true) do |f| %>
+        
+        <%= f.hidden_field :date, value: @first_day %>
+        <!--rowspan:縦結合、colspan：横結合-->
+        <tr>
+          <td rowspan="2"></td>
+          <td colspan="2">累計日数</td>
+          <td colspan="2">総合勤務時間</td>
+          <td colspan="2">累計在社時間</td>
+          <td colspan="8"></td>
+          <td>
+            所属長承認 上長Aへ申請中
+            <% if @superiors.present? %>
+            <%= f.collection_select :approval_instructor, @superiors, :name, :name, {include_blank: ""}, {required: true, class: "form-control"} %>
+            <% end %>
+            <%= f.submit "申請", class: "btn btn-primary btn-lg btn-block" %>
+          </td>
+        </tr>
+      <% end %>
       <tr>
         <td colspan="2"><%= @attendances.count %></td>
         <td colspan="2"><%= format_basic_info(@user.work_time).to_f * @worked_sum %></td>
         <td colspan="2"><%= format("%.2f", @total_working_times.to_f) %></td>
-        <td colspan="5"></td>
+        <td colspan="8"></td>
       </tr>
-    </tfoot> 
+   </tfoot>
   </table>	
 </div>
 

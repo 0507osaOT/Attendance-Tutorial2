@@ -15,9 +15,17 @@ class UsersController < ApplicationController
   end
 
   def show
+    @user = User.find(params[:id])
+  
     @worked_sum = @attendances.where.not(started_at: nil).count
-    @attendance_chg_req_sum = Attendance.where(status: "申請中",overtime_instructor: @user.name).count
-
+    @attendance_chg_req_sum = Attendance.where(status: "申請中", overtime_instructor: @user.name).count
+    # 上長ユーザーのデータを取得
+    @superiors = User.where(superior: true) # 例：role が '上長' のユーザーを取得
+    # 申請する月情報を設定
+    @target_month = Date.current.month
+    # 申請する年情報を設定
+    @target_year = Date.current.year
+  
     # ログインユーザーが管理者または自分自身の場合は処理を終了する
     return if current_user.admin? || current_user == @user
     # それ以外の場合は権限エラーメッセージを表示する

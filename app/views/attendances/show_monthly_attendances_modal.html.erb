@@ -1,0 +1,48 @@
+<!-- _show_monthly_attendances_modal.html.erb -->
+<% provide(:class_text, 'basic-info') %>
+<% provide(:button_text, '更新') %>
+
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+    </div>
+    <div class="modal-body">
+
+      <div class="center">
+       <%= form_with(model: @user, url: attendances_show_monthly_attendances_modal_user_path(@user), method: :patch, local: true) do |f| %>
+        <% @monthly_attendances.each do |month| %>
+          <h3 class="modal-title">【<%= month.name %>からの1ヶ月分勤怠申請】</h3>
+            <table class= "table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th > 日付 </th>
+                  <th > 曜日 </th>
+                  <th > 変更 </th>
+                  <th > 勤務を確認する </th>
+                </tr>
+                
+                  <tbody>
+                    <% monthly_attendance = Monthly_attendances.where(user_id: applicant.id, status: "申請中", instructor: @user.name) %>
+                    <% monthly_attendances.each do |attendance| %>
+                    <%= f.fields_for "monthly_attendances[]", monthly_attendance do |i| %>
+                   <tr>
+                    <td><%= l(monthly_attendance[:worked_on].to_date, format: :short) %></td>
+                    <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
+                    <td><%= i.check_box :approval, class: "show_overtime_modal " %></td>
+                    <td><%= link_to "確認", attendances_show_monthly_attendances_modal_user_path(applicant.id), class: "btn btn-primary btn-sm" %></td>
+                   </tr>
+                   <% end %>
+                   <% end %>
+                  </tbody>
+              </thead>
+          </table>
+       <% end %>
+       <%= f.submit "変更を送信する", class: "btn btn-primary btn-block" %>
+      <% end %>
+    </div>
+    </div>
+  </div>
+</div>
