@@ -113,7 +113,7 @@ class AttendancesController < ApplicationController
 
   def show_change_modal
     @user = User.find(params[:id])
-    @attendances = @user.attendances.distinct
+    @attendances = @user.attendances.where(status: "申請中").distinct
   end
 
   def show_overtime_modal
