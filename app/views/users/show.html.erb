@@ -49,7 +49,7 @@
   <%= link_to "CSV出力", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-info" %>
   <%= link_to "勤怠修正ログ(承認済み)", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-info" %>
 </div>
-  <table class="table table-bordered table-condensed table-hover" id="table-attendances">	
+  <table class="table table-bordered table-condensed table-hover" id="table-attendances">
     <thead>	
         <tr>
           <th rowspan="3">残業申請</th>
@@ -128,7 +128,7 @@
     </tbody>
     
     <tfoot>
-      <%= form_with(model: @user, url: send_monthly_attendance_request_user_path(@user), method: :patch, local: true) do |f| %>
+      <%= form_with(model: @user, url: attendances_send_monthly_attendance_request_user_path(@user), method: :patch, local: true) do |f| %>
         
         <%= f.hidden_field :date, value: @first_day %>
         <!--rowspan:縦結合、colspan：横結合-->
@@ -154,7 +154,16 @@
         <td colspan="8"></td>
       </tr>
    </tfoot>
-  </table>	
+  </table>
+
+<!-- モーダルの構造 -->
+  <div id="approval_modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <!-- モーダルの内容をここに記述 -->
+      </div>
+    </div>
+  </div>
 </div>
 
 <!---モーダルウィンドウ表示--->

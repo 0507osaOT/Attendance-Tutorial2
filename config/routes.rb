@@ -54,11 +54,12 @@ Rails.application.routes.draw do
       patch 'attendances/update_overtime_modal'
 
       #”所属長承認申請のお知らせ”のモーダル
-      get 'attendances/show_monthly_attendances_modal'
+      get 'attendances/_head_of_department_approval_modal'
       patch 'attendances/update_monthly_attendances_modal'
       
       #1ヶ月分の勤怠申請
-      patch '/attendances/send_monthly_attendance_request', to: 'attendances#send_monthly_attendance_request', as: 'send_monthly_attendance_request'
+      patch 'attendances/send_monthly_attendance_request'
+
 
     end
     resources :attendances do

@@ -8,6 +8,7 @@ class AttendancesController < ApplicationController
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
 
   def update
+    puts "Params ID: #{params[:id]}" # デバッグ用の出力
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
     # 出勤時間が未登録であることを判定します。
@@ -109,6 +110,15 @@ class AttendancesController < ApplicationController
   def show_monthly_attendances_modal
     @user = User.find(params[:id])
     @monthly_attendances = User.joins(:monthly_attendances).where(monthly_attendances: {master_status: "申請中", instructor:@user.name}).distinct
+  end
+
+  def update_monthly_attendances_modal
+    # アクションの処理を記述
+  end
+
+  def _head_of_department_approval_modal
+    @user = User.find(params[:id])
+    @attendances = @user.attendances.where(status: "申請中").distinct
   end
 
   def show_change_modal
@@ -214,4 +224,3 @@ class AttendancesController < ApplicationController
       end
     end
 end
-
