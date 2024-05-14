@@ -2,32 +2,32 @@
 <% provide(:class_text, 'basic-info') %>
 <% provide(:button_text, '更新') %>
 
-<div class="modal-dialog modal-lg modal-dialog-center">
-  <div class="modal-content">
-    <div class="modal-header">
+<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true"></span>
+          <span aria-hidden="true">&times;</span>
         </button>
-    </div>
-    <div class="modal-body">
-      <div class="center">
-         <%= form_with(model: @attendance, url: attendances_head_of_department_approval_modal_user_path(@user), method: :patch, local: true) do |f| %>
-            <h3 class="modal-title">【テストからの1ヶ月分勤怠申請】</h3>
+      </div>
+      <div class="modal-body">
+        <div class="center">
+          <%= form_with(model: @attendance, url: attendances_head_of_department_approval_modal_user_path(@user), method: :patch, local: true) do |f| %>
+            <h3 class="modal-title">【テストからの所属長承認申請】</h3>
             <table class="table table-bordered table-striped">
               <thead>
                 <tr>
-                  <th rowspan="3"> 日付 </th>
-                  <th rowspan="3"> 指示者確認㊞ </th>
-                  <th rowspan="3"> 変更 </th>
-                  <th rowspan="3"> 勤怠を確認する </th>
+                  <th>日付</th>
+                  <th>指示者確認㊞</th>
+                  <th>変更</th>
+                  <th>勤怠を確認する</th>
                 </tr>
               </thead>
               <tbody>
                 <% @attendances.each do |attendance| %>
                   <tr>
                     <td><%= l(attendance[:worked_on].to_date, format: :short) %></td>
-                    <td><%= f.select :status, [["なし", "なし"],["申請中", "申請中"], ["承認", "承認"], ["否認", "否認"]], { include_blank: "" }, { required: true, class: "show_change_modal" } %></td>
-                    <td><%= f.check_box :approval, class: "_head_of_department_approval_modal" %></td>
+                    <td><%= f.select :status, [["なし", "なし"], ["申請中", "申請中"], ["承認", "承認"], ["否認", "否認"]], { include_blank: "" }, { required: true, class: "head_of_department_approval_modal" } %></td>
+                    <td><%= f.check_box :approval, class: "head_of_department_approval_modal" %></td>
                     <td><%= f.submit "確認", class: "btn btn-primary btn-sm" %></td>
                   </tr>
                 <% end %>
@@ -35,7 +35,7 @@
             </table>
             <%= f.submit "変更を送信する", class: "btn btn-primary btn-block" %>
           <% end %>
-     </div> <!-- .center -->
-   </div> <!-- .modal-body -->
-  </div> <!-- .modal-content -->
-</div> <!-- .modal-dialog -->
+        </div> <!-- .center -->
+      </div> <!-- .modal-body -->
+    </div> <!-- .modal-content -->
+  </div> <!-- .modal-dialog -->

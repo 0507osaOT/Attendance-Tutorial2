@@ -116,7 +116,7 @@ class AttendancesController < ApplicationController
     # アクションの処理を記述
   end
 
-  def _head_of_department_approval_modal
+  def head_of_department_approval_modal
     @user = User.find(params[:id])
     @attendances = @user.attendances.where(status: "申請中").distinct
   end

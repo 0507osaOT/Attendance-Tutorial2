@@ -26,7 +26,7 @@
 
 <% if current_user.superior %>
   <% if true %>
-    <%= link_to "【所属長承認申請のお知らせ】", "#" %><br/>
+    <%= link_to "【所属長承認申請のお知らせ】", attendances_head_of_department_approval_modal_user_path, remote: true %><br/>
   <% end %>
   <%= link_to "【勤怠変更申請のお知らせ】", attendances_show_change_modal_user_path, remote: true %>
   
@@ -142,7 +142,7 @@
             所属長承認 上長Aへ申請中
             <% if @superiors.present? %>
             <%= f.collection_select :approval_instructor, @superiors, :name, :name, {include_blank: ""}, {required: true, class: "form-control"} %>
-            <% end %>
+          <% end %>
             <%= f.submit "申請", class: "btn btn-primary btn-lg btn-block" %>
           </td>
         </tr>
@@ -171,3 +171,4 @@
 <div id="edit_overtime_application_req" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="show_change_modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="show_overtime_modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="head_of_department_approval_modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
