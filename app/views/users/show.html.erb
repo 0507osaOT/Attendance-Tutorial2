@@ -30,9 +30,6 @@
   <% end %>
   <%= link_to "【勤怠変更申請のお知らせ】", attendances_show_change_modal_user_path, remote: true %>
   
-  <% if @attendance_chg_req_sum.present? && @attendance_chg_req_sum > 0 %>
-    <span class="tsuuti"><%= @attendance_chg_req_sum %>件の通知があります。</span>
-  <% end %>
   <br/>
   <%= link_to "【残業申請のお知らせ】", attendances_show_overtime_modal_user_path, remote: true %>
   

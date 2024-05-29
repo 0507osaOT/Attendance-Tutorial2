@@ -48,9 +48,14 @@
                     <td><%= l(attendance[:worked_on].to_date, format: :short) %></td>
                     <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
                     <td><%= attendance.started_at.strftime("%H:%M") if attendance.started_at %></td>
+                    <td><%= attendance.started_at.strftime("%H:%M") if attendance.started_at %></td>
                     <td><%= attendance.finished_at.strftime("%H:%M") if attendance.finished_at %></td>
-                    <td><%= attendance.overtime_content %></td>
-                    <td><%= f.text_field :overtime_content, class: "show_change_modal" %></td>
+                    <td><%= attendance.finished_at.strftime("%H:%M") if attendance.finished_at %></td>
+                    <td><%= attendance.started_at.strftime("%H:%M") if attendance.started_at %></td>
+                    <td><%= attendance.started_at.strftime("%H:%M") if attendance.started_at %></td>
+                    <td><%= attendance.finished_at.strftime("%H:%M") if attendance.finished_at %></td>
+                    <td><%= attendance.finished_at.strftime("%H:%M") if attendance.finished_at %></td>
+                    <td><%= "test" %></td>
                     <td><%= f.select :status, [["なし", "なし"],["申請中", "申請中"], ["承認", "承認"], ["否認", "否認"]], { include_blank: "" }, { required: true, class: "show_change_modal" } %></td>
                     <td><%= f.check_box :approval, class: "show_change_modal" %></td>
                     <td><%= f.submit "確認", class: "btn btn-primary btn-sm" %></td>

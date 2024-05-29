@@ -55,9 +55,11 @@ Rails.application.routes.draw do
 
       #”所属長承認申請のお知らせ”のモーダル
       get 'attendances/head_of_department_approval_modal'
+      patch 'attendances/head_of_department_approval_modal'
       
       #1ヶ月分の勤怠申請
       patch 'attendances/send_monthly_attendance_request'
+      get 'head_of_department_approval'
 
 
     end

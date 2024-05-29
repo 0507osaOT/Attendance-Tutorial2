@@ -115,10 +115,11 @@ class AttendancesController < ApplicationController
   def update_monthly_attendances_modal
     # アクションの処理を記述
   end
-
+  # 所属長承認の処理
   def head_of_department_approval_modal
+    @attendances = Attendance.all
     @user = User.find(params[:id])
-    @attendances = @user.attendances.where(status: "申請中").distinct
+    @applicants = User.joins(:monthly_attendances).where(monthly_attendances: {master_status: "申請中", instructor: @user.name}).distinct
   end
 
   def show_change_modal

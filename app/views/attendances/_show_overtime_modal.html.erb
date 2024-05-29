@@ -12,7 +12,8 @@
     <div class="modal-body">
       <div class="center">
         <%= form_with(model: @attendance, url: attendances_update_overtime_modal_user_path(@user), method: :patch, local: true) do |f| %>
-          <h3 class="modal-title">【<%= @user.name %>からの残業申請】</h3>
+         <% @applicants.each do |applicant| %>
+          <h3 class="modal-title">【<%= applicant.name %>からの残業申請】</h3>
           <table class="table table-bordered table-striped">
             <thead>
               <tr>
@@ -28,7 +29,6 @@
               </tr>
             </thead>
             <tbody>
-              <% @applicants.each do |applicant| %>
                 <% applicant.attendances.where(status: "申請中", overtime_instructor: @user.name).each do |attendance| %>
                   <tr>
                     <td><%= l(attendance.worked_on.to_date, format: :short) %></td>
@@ -42,9 +42,9 @@
                     <td><%= link_to "確認", show_attendances_status_req_user_path(applicant.id), class: "btn btn-primary btn-sm" %></td>
                   </tr>
                 <% end %>
-              <% end %>
             </tbody>
           </table>
+          <% end %>
           <%= f.submit "変更を送信する", class: "btn btn-primary btn-block" %>
         <% end %>
       </div>

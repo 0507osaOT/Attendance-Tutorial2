@@ -24,34 +24,9 @@
   </table>
 </div>
 
-<% if current_user.superior %>
-  <% if true %>
-    <%= link_to "【所属長承認申請のお知らせ】", "#" %><br/>
-  <% end %>
-  <%= link_to "【勤怠変更申請のお知らせ】", attendances_show_change_modal_user_path, remote: true %>
-  
-  <% if @attendance_chg_req_sum.present? && @attendance_chg_req_sum > 0 %>
-    <span class="tsuuti"><%= @attendance_chg_req_sum %>件の通知があります。</span>
-  <% end %>
-  <br/>
-  <%= link_to "【残業申請のお知らせ】", attendances_show_overtime_modal_user_path, remote: true %>
-  
-  <% if @attendance_chg_req_sum.present? && @attendance_chg_req_sum > 0 %>
-    <span class="tsuuti"><%= @attendance_chg_req_sum %>件の通知があります。</span>
-  <% end %>
-  <br/>
-  <br/>
-<% end %>
-
-<div class="btn-users-show">
-  <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-info" %>
-  <%= link_to "CSV出力", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-info" %>
-  <%= link_to "勤怠修正ログ(承認済み)", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-info" %>
-</div>
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">	
     <thead>	
         <tr>
-          <th rowspan="3">残業申請</th>
           <th rowspan="3">日付</th>
           <th rowspan="3">曜日</th>
           <th colspan="8">【実績】</th>
@@ -89,7 +64,6 @@
           end
         %>
       <tr>
-        <td><%= link_to "残業申請",attendances_edit_overtime_application_req_user_path(@user,date: day.worked_on),remote: true, class: "btn btn-primary" %></td>
         <td><%= l(day.worked_on, format: :short) %></td>
         <td class="<%= css_class %>"><%= $days_of_the_week[day.worked_on.wday] %></td>
         <td>
