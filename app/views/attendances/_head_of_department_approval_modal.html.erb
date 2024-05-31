@@ -12,7 +12,8 @@
       <div class="modal-body">
         <div class="center">
           <%= form_with(model: @attendance, url: attendances_head_of_department_approval_modal_user_path(@user), method: :patch, local: true) do |f| %>
-            <h3 class="modal-title">【テストからの所属長承認申請】</h3>
+          <% @applicants.each do |applicant| %>
+            <h3 class="modal-title">【<%= applicant.name %>からの所属長承認申請】</h3>
             <table class="table table-bordered table-striped">
               <thead>
                 <tr>
@@ -23,16 +24,18 @@
                 </tr>
               </thead>
               <tbody>
-                <% @attendances.each do |attendance| %>
+                <% @monthly_attendances = MonthlyAttendance.where(user_id: applicant.id, master_status: "申請中", instructor: @user.name) %>
+                <% @monthly_attendances.each do |monthly_attendance| %>
                   <tr>
-                    <td><%= l(attendance[:worked_on].to_date, format: :short) %></td>
+                    <td><%= monthly_attendance[:month] %></td>
                     <td><%= f.select :status, [["なし", "なし"], ["申請中", "申請中"], ["承認", "承認"], ["否認", "否認"]], { include_blank: "" }, { required: true, class: "head_of_department_approval_modal" } %></td>
                     <td><%= f.check_box :approval, class: "head_of_department_approval_modal" %></td>
-                    <td><%= link_to "確認", show_attendances_status_req_user_path(@user, attendance.id), class: "btn btn-primary btn-sm" %></td>
+                    <td><%= link_to "確認", show_attendances_status_req_user_path(@user, monthly_attendance.id), class: "btn btn-primary btn-sm" %></td>
                   </tr>
                 <% end %>
               </tbody>
             </table>
+          <% end %>
             <%= f.submit "変更を送信する", class: "btn btn-primary btn-block" %>
           <% end %>
         </div> <!-- .center -->
