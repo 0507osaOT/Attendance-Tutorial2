@@ -107,6 +107,12 @@ class AttendancesController < ApplicationController
     end
   end
 
+  def show_attendances_status_req
+    @applicant = User.find(params[:id])
+    @attendances = @applicant.attendances.where(status: "申請中").distinct
+    render 'show'
+  end
+
   def show_monthly_attendances_modal
     @user = User.find(params[:id])
     @monthly_attendances = User.joins(:monthly_attendances).where(monthly_attendances: {master_status: "申請中", instructor:@user.name}).distinct

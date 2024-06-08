@@ -16,22 +16,24 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
-  
+    @attendances = @user.attendances.where(worked_on: @first_day..@last_day)
     @worked_sum = @attendances.where.not(started_at: nil).count
     @attendance_chg_req_sum = Attendance.where(status: "申請中", overtime_instructor: @user.name).count
+    # 所属長承認申請中の数をカウント
+    @approval_req_sum = MonthlyAttendance.where(master_status: "所属長承認申請中", instructor: @user.name).count
+    # 勤怠変更申請中の数をカウント
+    @change_req_sum = MonthlyAttendance.where(master_status: "勤怠変更申請中", instructor: @user.name).count
     # 上長ユーザーのデータを取得
-    @superiors = User.where(superior: true) # 例：role が '上長' のユーザーを取得
-    # 申請する月情報を設定
+    @superiors = User.where(superior: true)
     @target_month = Date.current.month
-    # 申請する年情報を設定
-    @target_year = Date.current.year
-  
+
     # ログインユーザーが管理者または自分自身の場合は処理を終了する
     return if current_user.admin? || current_user == @user
     # それ以外の場合は権限エラーメッセージを表示する
     flash[:danger] = "権限がありません"
     redirect_to(root_url)
   end
+
 
   def new
     @user = User.new
