@@ -124,8 +124,38 @@ class AttendancesController < ApplicationController
   # 所属長承認の処理
   def head_of_department_approval_modal
     @user = User.find(params[:id])
-    @applicants = User.joins(:monthly_attendances).where(monthly_attendances: {master_status: "申請中", instructor: @user.name}).distinct
+    @applicants = User.where(superior: true)
+  
+    if request.patch?
+      head_of_department_approval_modal_params[:attendances].each do |id, item|
+        attendance = Attendance.find(id)
+        if attendance.update(item.permit(:status, :approval))
+          flash[:success] = '承認が更新されました。'
+        else
+          flash.now[:danger] = '承認の更新に失敗しました。'
+          render :head_of_department_approval_modal and return
+        end
+      end
+      redirect_to user_path(@user)
+    else
+      respond_to do |format|
+        format.html
+        format.js
+      end
+    end
   end
+  
+  private
+  
+  def head_of_department_approval_modal_params
+    params.permit(attendances: [:status, :approval])
+  end
+  
+  
+  
+    
+
+
 
   def show_change_modal
     @user = User.find(params[:id])
