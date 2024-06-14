@@ -8,24 +8,14 @@ class AttendancesController < ApplicationController
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
 
   def update
-    puts "Params ID: #{params[:id]}" # デバッグ用の出力
-    @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
-    # 出勤時間が未登録であることを判定します。
-    if @attendance.started_at.nil?
-      if @attendance.update_attributes(started_at: Time.current.change(sec: 0))
-        flash[:info] = "おはようございます！"
-      else
-        flash[:danger] = UPDATE_ERROR_MSG
-      end
-    elsif @attendance.finished_at.nil?
-      if @attendance.update_attributes(finished_at: Time.current.change(sec: 0))
-        flash[:info] = "お疲れ様でした。"
-      else
-        flash[:danger] = UPDATE_ERROR_MSG
-      end
+    if @attendance.update(attendance_params)
+      flash[:success] = "Attendance updated successfully."
+      redirect_to user_path(@attendance.user_id)
+    else
+      flash[:danger] = "Failed to update attendance."
+      render :edit
     end
-    redirect_to @user
   end
 
   def edit_one_month
@@ -79,26 +69,21 @@ class AttendancesController < ApplicationController
 
   def edit_overtime_application_req
     @user = User.find(params[:id])
-    #@attendance = Attendance.find_by(worked_on: params[:date])
     @attendance = @user.attendances.find_by(worked_on: params[:date])
     @date = params[:date].to_date
     @superiors = User.where(superior: true).where.not(name: @user.name)
   end
 
   def update_overtime_application_req
-    
     @user = User.find(params[:id])
     @attendance = Attendance.find_by(worked_on: params[:attendance][:date]&.to_date, user_id: @user.id)
-  
     if @attendance
-      # Update attendance with overtime information
       @attendance.update(
-        overtime: params[:attendance][:overtime],  # "overtime_at" ではなく "overtime" を使用
+        overtime: params[:attendance][:overtime],
         approval: params[:attendance][:approval],
         overtime_content: params[:attendance][:overtime_content],
         overtime_instructor: params[:attendance][:overtime_instructor],
         status: "申請中")
-
       flash[:success] = "残業申請を受け付けました。"
       redirect_to user_url
     else
@@ -121,11 +106,10 @@ class AttendancesController < ApplicationController
   def update_monthly_attendances_modal
     # アクションの処理を記述
   end
-  # 所属長承認の処理
+
   def head_of_department_approval_modal
     @user = User.find(params[:id])
     @applicants = User.where(superior: true)
-  
     if request.patch?
       head_of_department_approval_modal_params[:attendances].each do |id, item|
         attendance = Attendance.find(id)
@@ -144,18 +128,6 @@ class AttendancesController < ApplicationController
       end
     end
   end
-  
-  private
-  
-  def head_of_department_approval_modal_params
-    params.permit(attendances: [:status, :approval])
-  end
-  
-  
-  
-    
-
-
 
   def show_change_modal
     @user = User.find(params[:id])
@@ -167,35 +139,24 @@ class AttendancesController < ApplicationController
     @applicants = User.joins(:attendances).where(attendances: {status: "申請中", overtime_instructor: @user.name}).distinct
   end
 
-  # 残業申請の承認処理
   def update_overtime_modal
-    # 承認情報更新フラグ
     apply_flg = false
-
-    ActiveRecord::Base.transaction do   # トランザクションを開始します。
-      # 残業申請の承認処理
+    ActiveRecord::Base.transaction do
       overtime_application_params.each do |id, item|
-        #　checkboxにチェックあり？
         if item[:approval] == "1"
-
           overtime_attendance = Attendance.find(id)
-
           case item[:status]
-          when "承認"   # 承認
+          when "承認"
             overtime_attendance.status = "承認"
             overtime_attendance.approval = true
             apply_flg = true
-
-          when "否認", "なし"    # 否認、なし
+          when "否認", "なし"
             overtime_attendance.status = item[:status]
             overtime_attendance.approval = true
             apply_flg = true
-
           else
             # 何もしない
           end
-
-          # DBへ更新情報を記録
           overtime_attendance.save!
         end
       end
@@ -205,58 +166,54 @@ class AttendancesController < ApplicationController
       flash[:success] = "残業申請について、指示者確認情報を更新しました。"
     end
     redirect_to user_url(date: params[:date])
-
-    rescue ActiveRecord::RecordInvalid
-      flash[:danger] = "無効なデータがあったため、更新をキャンセルしました。"
-      redirect_to user_url(date: params[:date])
-    end
+  rescue ActiveRecord::RecordInvalid
+    flash[:danger] = "無効なデータがあったため、更新をキャンセルしました。"
+    redirect_to user_url(date: params[:date])
+  end
 
   def send_monthly_attendance_request
-    #byebug
     @user = User.find(params[:id])
-    @date = params[:user][:date].presence || Date.current # params[:date]がnilの場合は、現在の日付を使用する
+    @date = params[:user][:date].presence || Date.current
     @month = @date.to_date.month
     @year = @date.to_date.year
     monthly_attendance = MonthlyAttendance.find_or_create_by(user_id: @user.id, month: @month, year: @year)
-    
     if monthly_attendance.persisted?
-      #申請先の上長
       monthly_attendance.instructor = params[:user][:approval_instructor]
-      #申請ステータス
       monthly_attendance.master_status = "申請中"
       monthly_attendance.save
       flash[:success] = "1ヶ月分の勤怠申請を送信しました。"
     else
       flash[:danger] = "1ヶ月の勤怠申請に失敗しました。"
     end
-    
     redirect_to user_url(date: @date)
   end
-  
 
   private
 
-    # 1ヶ月分の勤怠情報を扱います。
-    def attendances_params
-      params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
-    end
-    # 残業申請の承認情報を扱います。
-    def overtime_application_params
-      params.require(:user).permit(attendances: [:status,:approval])[:attendances]
-    end
+  def attendances_params
+    params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
+  end
 
-    # 管理権限者、または現在ログインしているユーザーを許可します。
-    def admin_or_correct_user
-      @user = User.find(params[:user_id]) if @user.blank?
-      unless current_user?(@user) || current_user.admin?
-        flash[:danger] = "編集権限がありません。"
-        redirect_to(root_url)
-      end
+  def overtime_application_params
+    params.require(:user).permit(attendances: [:status, :approval])[:attendances]
+  end
+
+  def attendance_params
+    params.require(:attendance).permit(:started_at, :finished_at, :status, :approval)
+  end
+
+  def admin_or_correct_user
+    @user = User.find(params[:user_id]) if @user.blank?
+    unless current_user?(@user) || current_user.admin?
+      flash[:danger] = "編集権限がありません。"
+      redirect_to(root_url)
     end
-    def require_login
-      unless logged_in?
-        flash[:error] = "You must be logged in to access this section"
-        redirect_to login_url # halts request cycle
-      end
+  end
+
+  def require_login
+    unless logged_in?
+      flash[:error] = "You must be logged in to access this section"
+      redirect_to login_url
     end
+  end
 end
