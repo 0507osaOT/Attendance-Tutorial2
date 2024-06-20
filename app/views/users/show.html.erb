@@ -25,7 +25,7 @@
 </div>
 
 <% if current_user.superior %>
-  <%= link_to "【所属長承認申請のお知らせ】", attendances_head_of_department_approval_modal_user_path, remote: true %>
+  <%= link_to "【所属長承認申請のお知らせ】", attendances_show_monthly_attendances_modal_user_path, remote: true %>
   <% if @approval_req_sum.present? && @approval_req_sum > 0 %>
     <span class="tsuuti"><%= @approval_req_sum %>件の通知があります。</span>
   <% end %>
@@ -168,4 +168,4 @@
 <div id="edit_overtime_application_req" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="show_change_modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="show_overtime_modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
-<div id="head_of_department_approval_modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="show_monthly_attendances_modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

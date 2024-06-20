@@ -7,6 +7,7 @@ class AttendancesController < ApplicationController
 
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
 
+  # 出勤・退勤登録ボタン押下時の処理
   def update
     @attendance = Attendance.find(params[:id])
     if @attendance.update(attendance_params)
@@ -18,9 +19,11 @@ class AttendancesController < ApplicationController
     end
   end
 
+  # 勤怠編集ページの表示
   def edit_one_month
   end
 
+  #勤怠編集ページの更新ボタン押下時の処理
   def update_one_month
     apply_flg = false  # apply_flg を定義
 
@@ -48,32 +51,15 @@ class AttendancesController < ApplicationController
     end
   end
 
-  def new_overtime_request
-    @user = User.find(params[:user_id])
-    @attendance = @user.attendances.find_by(worked_on: params[:date])
-    @overtime_request = OvertimeRequest.new
-  end
-
-  def create_overtime_request
-    @user = User.find(params[:user_id])
-    @attendance = @user.attendances.find_by(worked_on: params[:date])
-    @overtime_request = OvertimeRequest.new(overtime_request_params)
-
-    if @overtime_request.save
-      flash[:success] = "残業申請が送信されました。"
-      redirect_to user_path(@user, date: @attendance.worked_on)
-    else
-      render 'overtime_request'
-    end
-  end
-
+  #残業申請ボタン押下・表示
   def edit_overtime_application_req
     @user = User.find(params[:id])
     @attendance = @user.attendances.find_by(worked_on: params[:date])
     @date = params[:date].to_date
     @superiors = User.where(superior: true).where.not(name: @user.name)
   end
-
+  
+  #残業申請フォームの内容送信時の処理
   def update_overtime_application_req
     @user = User.find(params[:id])
     @attendance = Attendance.find_by(worked_on: params[:attendance][:date]&.to_date, user_id: @user.id)
@@ -91,54 +77,14 @@ class AttendancesController < ApplicationController
       redirect_to user_url
     end
   end
-
-  def show_attendances_status_req
-    @applicant = User.find(params[:id])
-    @attendances = @applicant.attendances.where(status: "申請中").distinct
-    render 'show'
-  end
-
-  def show_monthly_attendances_modal
-    @user = User.find(params[:id])
-    @monthly_attendances = User.joins(:monthly_attendances).where(monthly_attendances: {master_status: "申請中", instructor:@user.name}).distinct
-  end
-
-  def update_monthly_attendances_modal
-    # アクションの処理を記述
-  end
-
-  def head_of_department_approval_modal
-    @user = User.find(params[:id])
-    @applicants = User.where(superior: true)
-    if request.patch?
-      head_of_department_approval_modal_params[:attendances].each do |id, item|
-        attendance = Attendance.find(id)
-        if attendance.update(item.permit(:status, :approval))
-          flash[:success] = '承認が更新されました。'
-        else
-          flash.now[:danger] = '承認の更新に失敗しました。'
-          render :head_of_department_approval_modal and return
-        end
-      end
-      redirect_to user_path(@user)
-    else
-      respond_to do |format|
-        format.html
-        format.js
-      end
-    end
-  end
-
-  def show_change_modal
-    @user = User.find(params[:id])
-    @attendances = @user.attendances.where(status: "申請中").distinct
-  end
-
+  
+  #残業申請の内容表示
   def show_overtime_modal
     @user = User.find(params[:id])
     @applicants = User.joins(:attendances).where(attendances: {status: "申請中", overtime_instructor: @user.name}).distinct
   end
-
+  
+  # 残業申請の承認処理
   def update_overtime_modal
     apply_flg = false
     ActiveRecord::Base.transaction do
@@ -171,6 +117,14 @@ class AttendancesController < ApplicationController
     redirect_to user_url(date: params[:date])
   end
 
+  #確認用の勤怠表示(残業申請・所属長承認申請・勤怠変更申請)
+  def show_attendances_status_req
+    @applicant = User.find(params[:id])
+    @attendances = @applicant.attendances.where(status: "申請中").distinct
+    render 'show'
+  end
+  
+  #1ヶ月分の勤怠申請処理
   def send_monthly_attendance_request
     @user = User.find(params[:id])
     @date = params[:user][:date].presence || Date.current
@@ -188,7 +142,82 @@ class AttendancesController < ApplicationController
     redirect_to user_url(date: @date)
   end
 
+  #所属長承認申請　モーダル表示
+  def show_monthly_attendances_modal
+    @user = User.find(params[:id])
+    @applicants = User.joins(:monthly_attendances).where(monthly_attendances: {master_status: "申請中", instructor:@user.name}).distinct
+  end
+  
+  #所属長承認申請　承認処理
+  def update_monthly_attendances_modal
+    @user = User.find(params[:id])
+    @applicants = User.where(master_status: true)
+  
+    # デバッグ用の出力
+    puts "User ID: #{@user.id}"
+    puts "Applicants: #{@applicants.pluck(:id, :name)}"
+    
+    if request.patch?
+      head_of_department_approval_modal_params[:monthly_attendances].each do |id, item|
+        monthly_attendance = MonthlyAttendance.find(id)
+        if monthly_attendance.update(item.permit(:master_status))
+          flash[:success] = '承認が更新されました。'
+        else
+          flash.now[:danger] = '承認の更新に失敗しました。'
+          render :head_of_department_approval_modal and return
+        end
+      end
+      redirect_to user_path(@user)
+    else
+      respond_to do |format|
+        format.html
+        format.js
+      end
+    end
+  end
+
+  #保留
+  def head_of_department_approval_modal
+    @user = User.find(params[:id])
+    @applicants = User.where(master_status: true)
+  
+    # デバッグ用の出力
+    puts "User ID: #{@user.id}"
+    puts "Applicants: #{@applicants.pluck(:id, :name)}"
+    
+    if request.patch?
+      head_of_department_approval_modal_params[:monthly_attendances].each do |id, item|
+        monthly_attendance = MonthlyAttendance.find(id)
+        if monthly_attendance.update(item.permit(:master_status))
+          flash[:success] = '承認が更新されました。'
+        else
+          flash.now[:danger] = '承認の更新に失敗しました。'
+          render :head_of_department_approval_modal and return
+        end
+      end
+      redirect_to user_path(@user)
+    else
+      respond_to do |format|
+        format.html
+        format.js
+      end
+    end
+  end
+  
+  #勤怠変更申請　モーダル表示
+  def show_change_modal
+    @user = User.find(params[:id])
+    @attendances = @user.attendances.where(status: "申請中").distinct
+  end
+
+  #勤怠変更申請　承認処理
+  def update_change_modal
+  end
+
   private
+  def head_of_department_approval_modal_params
+    params.require(:user).permit(monthly_attendances: [:master_status])
+  end
 
   def attendances_params
     params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]

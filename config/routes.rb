@@ -32,7 +32,7 @@ Rails.application.routes.draw do
       get 'edit_overwork_request'
       patch 'edit_overwork_request_info'
       
-       # 勤怠変更申請
+       # 勤怠変更申請 保留
        get 'attendances/show_attendance_chg_req'
 
       get 'attendances/working'
@@ -48,19 +48,20 @@ Rails.application.routes.draw do
 
       #”勤怠変更申請のお知らせ”のモーダル
       get 'attendances/show_change_modal'
+      patch 'attendances/update_change_modal'
 
       #”残業申請のお知らせ”のモーダル
       get 'attendances/show_overtime_modal'
       patch 'attendances/update_overtime_modal'
 
       #”所属長承認申請のお知らせ”のモーダル
-      get 'attendances/head_of_department_approval_modal'
-      patch 'attendances/head_of_department_approval_modal'
+      #モーダルの表示
+      get 'attendances/show_monthly_attendances_modal'
+      #モーダルの中身
+      patch 'attendances/update_monthly_attendances_modal'
       
       #1ヶ月分の勤怠申請
       patch 'attendances/send_monthly_attendance_request'
-      get 'head_of_department_approval'
-
 
     end
     resources :attendances do

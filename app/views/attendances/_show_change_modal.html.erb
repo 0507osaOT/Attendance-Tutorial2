@@ -12,7 +12,7 @@
     <div class="modal-body">
       <div class="center">
         <% @attendances.each do |attendance| %>
-          <%= form_with(model: attendance, url: attendance_path(attendance), method: :patch, local: true) do |f| %>
+          <%= form_with(model: attendance, url: attendances_show_change_modal_user_path(attendance), method: :patch, local: true) do |f| %>
             <h3 class="modal-title">【テストからの勤怠変更申請】</h3>
             <table class="table table-bordered table-striped">
               <thead>
