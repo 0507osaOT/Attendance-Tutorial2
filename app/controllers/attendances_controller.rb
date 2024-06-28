@@ -175,34 +175,6 @@ class AttendancesController < ApplicationController
       end
     end
   end
-
-  #保留
-  def head_of_department_approval_modal
-    @user = User.find(params[:id])
-    @applicants = User.where(master_status: true)
-  
-    # デバッグ用の出力
-    puts "User ID: #{@user.id}"
-    puts "Applicants: #{@applicants.pluck(:id, :name)}"
-    
-    if request.patch?
-      head_of_department_approval_modal_params[:monthly_attendances].each do |id, item|
-        monthly_attendance = MonthlyAttendance.find(id)
-        if monthly_attendance.update(item.permit(:master_status))
-          flash[:success] = '承認が更新されました。'
-        else
-          flash.now[:danger] = '承認の更新に失敗しました。'
-          render :head_of_department_approval_modal and return
-        end
-      end
-      redirect_to user_path(@user)
-    else
-      respond_to do |format|
-        format.html
-        format.js
-      end
-    end
-  end
   
   #勤怠変更申請　モーダル表示
   def show_change_modal

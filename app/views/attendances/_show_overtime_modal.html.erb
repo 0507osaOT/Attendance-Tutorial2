@@ -11,7 +11,7 @@
     </div>
     <div class="modal-body">
       <div class="center">
-        <%= form_with(model: @attendance, url: attendances_update_overtime_modal_user_path(@user), method: :patch, local: true) do |f| %>
+        <%= form_with(model: @user, url: attendances_update_overtime_modal_user_path(@user), method: :patch, local: true) do |f| %>
          <% @applicants.each do |applicant| %>
           <h3 class="modal-title">【<%= applicant.name %>からの残業申請】</h3>
           <table class="table table-bordered table-striped">
@@ -30,6 +30,7 @@
             </thead>
             <tbody>
                 <% applicant.attendances.where(status: "申請中", overtime_instructor: @user.name).each do |attendance| %>
+                <%= f.fields_for "attendances[]", attendance do |i| %>
                   <tr>
                     <td><%= l(attendance.worked_on.to_date, format: :short) %></td>
                     <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
@@ -37,10 +38,11 @@
                     <td><%= format_basic_info(applicant.designated_work_end_time) %></td>
                     <td><%= format("%.2f", calc_overtime(attendance.overtime, applicant.designated_work_end_time)) %></td>
                     <td><%= attendance.overtime_content %></td>
-                    <td><%= f.select :status, [["なし", "なし"],["申請中", "申請中"], ["承認", "承認"], ["否認", "否認"]], { include_blank: "" }, { required: true, class: "show_overtime_modal" } %></td>
-                    <td><%= f.check_box :approval, class: "show_overtime_modal" %></td>
+                    <td><%= i.select :status, [["なし", "なし"],["申請中", "申請中"], ["承認", "承認"], ["否認", "否認"]], { include_blank: "" }, { required: true, class: "show_overtime_modal" } %></td>
+                    <td><%= i.check_box :approval, class: "show_overtime_modal" %></td>
                     <td><%= link_to "確認", show_attendances_status_req_user_path(applicant.id), class: "btn btn-primary btn-sm" %></td>
                   </tr>
+                <% end %>
                 <% end %>
             </tbody>
           </table>
