@@ -151,29 +151,38 @@ class AttendancesController < ApplicationController
   #所属長承認申請　承認処理
   def update_monthly_attendances_modal
     @user = User.find(params[:id])
-    @applicants = User.where(master_status: true)
-  
-    # デバッグ用の出力
-    puts "User ID: #{@user.id}"
-    puts "Applicants: #{@applicants.pluck(:id, :name)}"
+    apply_flg = false
     
-    if request.patch?
-      head_of_department_approval_modal_params[:monthly_attendances].each do |id, item|
-        monthly_attendance = MonthlyAttendance.find(id)
-        if monthly_attendance.update(item.permit(:master_status))
-          flash[:success] = '承認が更新されました。'
-        else
-          flash.now[:danger] = '承認の更新に失敗しました。'
-          render :head_of_department_approval_modal and return
+    ActiveRecord::Base.transaction do
+      show_monthly_attendances_modal_params.each do |id, item|
+        if item[:approval] == "1"
+          monthly_attendance = MonthlyAttendance.find(id)
+          case item[:master_status]
+          when "承認"
+            monthly_attendance.master_status = "承認"
+            monthly_attendance.approval = true
+            apply_flg = true
+          when "否認", "なし"
+            monthly_attendance.master_status = item[:master_status]
+            monthly_attendance.approval = true
+            apply_flg = true
+          else
+            # 何もしない（"申請中"の場合）
+          end
+          monthly_attendance.save!
         end
       end
-      redirect_to user_path(@user)
-    else
-      respond_to do |format|
-        format.html
-        format.js
-      end
     end
+  
+    if apply_flg
+      flash[:success] = "1ヶ月分の勤怠申請について、指示者確認情報を更新しました。"
+    else
+      flash[:info] = "変更がありませんでした。"
+    end
+    redirect_to user_url(date: params[:date])
+  rescue ActiveRecord::RecordInvalid
+    flash[:danger] = "無効なデータがあったため、更新をキャンセルしました。"
+    redirect_to user_url(date: params[:date])
   end
   
   #勤怠変更申請　モーダル表示
@@ -187,8 +196,8 @@ class AttendancesController < ApplicationController
   end
 
   private
-  def head_of_department_approval_modal_params
-    params.require(:user).permit(monthly_attendances: [:master_status])
+  def show_monthly_attendances_modal_params
+    params.require(:user).permit(monthly_attendances: [:master_status,:approval])[:monthly_attendances]
   end
 
   def attendances_params
