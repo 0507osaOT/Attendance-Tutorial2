@@ -11,12 +11,11 @@ class AttendancesController < ApplicationController
   def update
     @attendance = Attendance.find(params[:id])
     if @attendance.update(attendance_params)
-      flash[:success] = "Attendance updated successfully."
-      redirect_to user_path(@attendance.user_id)
+      flash[:success] = "勤怠情報を更新しました。"
     else
-      flash[:danger] = "Failed to update attendance."
-      render :edit
+      flash[:danger] = "勤怠情報の更新に失敗しました。"
     end
+    redirect_to @user
   end
 
   # 勤怠編集ページの表示
@@ -201,7 +200,7 @@ class AttendancesController < ApplicationController
   end
 
   def attendances_params
-    params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
+    params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:approval]
   end
 
   def overtime_application_params
@@ -209,7 +208,7 @@ class AttendancesController < ApplicationController
   end
 
   def attendance_params
-    params.require(:attendance).permit(:started_at, :finished_at, :status, :approval)
+    params.require(:attendance).permit(:started_at, :finished_at)
   end
 
   def admin_or_correct_user
