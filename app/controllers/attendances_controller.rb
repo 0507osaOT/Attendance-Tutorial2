@@ -9,11 +9,20 @@ class AttendancesController < ApplicationController
 
   # 出勤・退勤登録ボタン押下時の処理
   def update
+    @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
-    if @attendance.update(attendance_params)
-      flash[:success] = "勤怠情報を更新しました。"
-    else
-      flash[:danger] = "勤怠情報の更新に失敗しました。"
+    if @attendance.started_at.nil?
+      if @attendance.update_attributes(started_at: Time.current.change(sec: 0))
+        flash[:info] = "おはようございます！"
+      else
+        flash[:danger] = UPDATE_ERROR_MSG
+      end
+    elsif @attendance.finished_at.nil?
+      if @attendance.update_attributes(finished_at: Time.current.change(sec: 0))
+        flash[:info] = "お疲れ様でした。"
+      else
+        flash[:danger] = UPDATE_ERROR_MSG
+      end
     end
     redirect_to @user
   end
@@ -205,10 +214,6 @@ class AttendancesController < ApplicationController
 
   def overtime_application_params
     params.require(:user).permit(attendances: [:status, :approval])[:attendances]
-  end
-
-  def attendance_params
-    params.require(:attendance).permit(:started_at, :finished_at)
   end
 
   def admin_or_correct_user

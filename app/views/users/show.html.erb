@@ -149,7 +149,23 @@
           <td colspan="2">累計在社時間</td>
           <td colspan="8"></td>
           <td>
-            所属長承認 上長Aへ申請中
+            <% if @monthly_attendance.present? %>
+            <% @monthly_attendance.each do |monthly_attendance| %>
+              <% case monthly_attendance.master_status %>
+              <% when '申請中' %>
+
+                  所属長承認 <%= monthly_attendance.instructor %>へ申請中
+              <% when '承認' %>
+                所属長承認 <%= monthly_attendance.instructor %>から承認済
+              <% when '否認' %>
+                所属長承認 <%= monthly_attendance.instructor %>から否認
+              <% else %>
+                所属長承認 未
+              <% end %>
+             <% end %>
+            <% else %>
+              所属長承認 未
+            <% end %>
             <% if @superiors.present? %>
             <%= f.collection_select :approval_instructor, @superiors, :name, :name, {include_blank: ""}, {required: true, class: "form-control"} %>
           <% end %>

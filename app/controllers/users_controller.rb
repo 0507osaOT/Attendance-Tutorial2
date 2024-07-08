@@ -23,6 +23,9 @@ class UsersController < ApplicationController
     @change_req_sum = MonthlyAttendance.where(master_status: "勤怠変更申請中", instructor: @user.name).count
     @superiors = User.where(superior: true)
     @target_month = Date.current.month
+    month = @first_day.month.to_s
+    year  = @first_day.year.to_s
+    @monthly_attendance = @user.monthly_attendances.where(month: month, year: year)
 
     return if current_user.admin? || current_user == @user
     flash[:danger] = "権限がありません"
