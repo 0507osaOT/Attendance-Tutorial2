@@ -1,3 +1,4 @@
+<%# edit_one_month.html.erb %>
 <% provide(:title, @user.name) %>
 <%= form_with(model: @user, url: attendances_update_one_month_user_path(date: @first_day), local: true, method: :patch) do |f| %>
   <div>
@@ -35,7 +36,7 @@
                 <% end %>
               </td>
               <td><%= attendance.text_field :note, class: "form-control" %></td>
-              <td></td>
+              <td><%= f.collection_select :overtime_instructor, @superiors, :name, :name, {include_blank: ""},{class: "form-control"} %></td>
             </tr>
           <% end %>
         <% end %>
@@ -44,7 +45,7 @@
   </div>
 
   <div class="center">
-    <%= f.submit "まとめて更新", class: "btn btn-lg btn-primary" %>
-    <%= link_to "キャンセル", user_path(date: @first_day), class: "btn btn-lg btn-default" %>
+    <%= link_to "キャンセル", user_path(date: @first_day), class: "btn btn-lg btn-primary" %>
+    <%= f.submit "編集を保存する", class: "btn btn-lg btn-primary" %>
   </div>
 <% end %>

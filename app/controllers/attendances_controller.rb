@@ -29,34 +29,57 @@ class AttendancesController < ApplicationController
 
   # 勤怠編集ページの表示
   def edit_one_month
+    @attendance = Attendance.find(params[:id])
+    @superiors = User.where(superior: true)
   end
 
   #勤怠編集ページの更新ボタン押下時の処理
   def update_one_month
     apply_flg = false  # apply_flg を定義
-
+  
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       attendances_params.each do |id, item|
         attendance = Attendance.find(id)
-        if item[:started_at].present? && item[:finished_at].blank?
+        if attendances_params[:started_at].present? && attendances_params[:finished_at].blank?
           flash[:danger] = "出社時間と退社時間の両方を入力してください。"
           redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
-        elsif item[:started_at].blank? && item[:finished_at].present?
+        elsif attendances_params[:started_at].blank? && attendances_params[:finished_at].present?
           flash[:danger] = "出社時間と退社時間の両方を入力してください。"
           redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
         else
-          attendance.update_attributes!(item) unless attendance.worked_on > Date.today #当日以降の勤怠は更新しないようにする
+          unless attendance.worked_on > Date.today # 当日以降の勤怠は更新しないようにする
+            if attendance.worked_on < Date.today && attendance.status == "申請中"
+              # 過去の日付の場合、変更申請として処理
+              attendance.chg_started_at = attendances_params[:started_at]
+              attendance.chg_finished_at = attendances_params[:finished_at]
+            elsif attendance.worked_on == Date.today
+              # 当日の場合、直接更新
+              attendance.started_at = attendances_params[:started_at]
+              attendance.finished_at = attendances_params[:finished_at]
+            end
+            attendance.update_attributes!(item)
+          end
         end
       end
-
+  
       apply_flg = true # トランザクションが正常に終了した場合にフラグを設定
-
+  
       flash[:success] = "1ヶ月分の勤怠情報を更新しました。"
       redirect_to user_url(date: params[:date])
     rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
       flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
       redirect_to attendances_edit_one_month_user_url(date: params[:date])
     end
+  end
+
+  #勤怠変更申請　モーダル表示
+  def show_change_modal
+    @user = User.find(params[:id])
+    @attendances = @user.attendances.where(status: "申請中").distinct
+  end
+
+  #勤怠変更申請　承認処理
+  def update_change_modal
   end
 
   #残業申請ボタン押下・表示
@@ -192,16 +215,6 @@ class AttendancesController < ApplicationController
     flash[:danger] = "無効なデータがあったため、更新をキャンセルしました。"
     redirect_to user_url(date: params[:date])
   end
-  
-  #勤怠変更申請　モーダル表示
-  def show_change_modal
-    @user = User.find(params[:id])
-    @attendances = @user.attendances.where(status: "申請中").distinct
-  end
-
-  #勤怠変更申請　承認処理
-  def update_change_modal
-  end
 
   private
   def show_monthly_attendances_modal_params
@@ -209,7 +222,7 @@ class AttendancesController < ApplicationController
   end
 
   def attendances_params
-    params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:approval]
+    params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
   end
 
   def overtime_application_params
