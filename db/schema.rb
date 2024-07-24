@@ -16,14 +16,14 @@ ActiveRecord::Schema.define(version: 20240717221110) do
     t.date "worked_on"
     t.datetime "started_at"
     t.datetime "finished_at"
-    t.string "status"
+    t.string "status" #残業申請のステータス
     t.string "note"
     t.integer "user_id"
     t.datetime "overtime"
     t.string "approval"
     t.string "overtime_content"
     t.string "overtime_instructor"
-    t.string "work_status"
+    t.string "work_status"  #勤怠変更申請のステータス
     t.string "work_instructor"
     t.datetime "chg_started_at"
     t.datetime "chg_finished_at"

@@ -40,31 +40,32 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       attendances_params.each do |id, item|
         attendance = Attendance.find(id)
-        if attendances_params[:started_at].present? && attendances_params[:finished_at].blank?
+        if item[:started_at].present? && item[:finished_at].blank?
           flash[:danger] = "出社時間と退社時間の両方を入力してください。"
           redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
-        elsif attendances_params[:started_at].blank? && attendances_params[:finished_at].present?
+        elsif item[:started_at].blank? && item[:finished_at].present?
           flash[:danger] = "出社時間と退社時間の両方を入力してください。"
           redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
         else
           unless attendance.worked_on > Date.today # 当日以降の勤怠は更新しないようにする
-            if attendance.worked_on < Date.today && attendance.status == "申請中"
-              # 過去の日付の場合、変更申請として処理
-              attendance.chg_started_at = attendances_params[:started_at]
-              attendance.chg_finished_at = attendances_params[:finished_at]
-            elsif attendance.worked_on == Date.today
-              # 当日の場合、直接更新
-              attendance.started_at = attendances_params[:started_at]
-              attendance.finished_at = attendances_params[:finished_at]
+            if item[:work_instructor].present?
+            #勤怠変更情報を一時保存する（※上長に承認を貰うまでは、変更情報を出社時間・退社時間に反映しない）
+              attendance.chg_started_at = item[:started_at]
+              attendance.chg_finished_at = item[:finished_at]
+              attendance.note = item[:note]
+              attendance.work_instructor = item[:work_instructor]
+              attendance.work_status = "申請中"
+
+              #DBへ保存する
+              attendance.save
             end
-            attendance.update_attributes!(item)
           end
         end
       end
   
       apply_flg = true # トランザクションが正常に終了した場合にフラグを設定
   
-      flash[:success] = "1ヶ月分の勤怠情報を更新しました。"
+      flash[:success] = "勤怠変更を更新しました。"
       redirect_to user_url(date: params[:date])
     rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
       flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
