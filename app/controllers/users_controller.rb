@@ -20,7 +20,7 @@ class UsersController < ApplicationController
     @worked_sum = @attendances.where.not(started_at: nil).count
     @attendance_chg_req_sum = Attendance.where(status: "申請中", overtime_instructor: @user.name).count
     @approval_req_sum = MonthlyAttendance.where(master_status: "申請中", instructor: @user.name).count
-    @change_req_sum = MonthlyAttendance.where(master_status: "勤怠変更申請中", instructor: @user.name).count
+    @change_req_sum = Attendance.where(work_status: "申請中", work_instructor: @user.name).count
     @superiors = User.where(superior: true)
     @target_month = Date.current.month
     month = @first_day.month.to_s

@@ -11,9 +11,9 @@
     </div>
     <div class="modal-body">
       <div class="center">
-        <% @attendances.each do |attendance| %>
-          <%= form_with(model: attendance, url: attendances_show_change_modal_user_path(attendance), method: :patch, local: true) do |f| %>
-            <h3 class="modal-title">【テストからの勤怠変更申請】</h3>
+          <%= form_with(model: @user, url: attendances_show_change_modal_user_path(@user), method: :patch, local: true) do |f| %>
+           <% @applicants.each do |applicant| %>
+            <h3 class="modal-title">【<%= applicant.name %>からの勤怠変更申請】</h3>
             <table class="table table-bordered table-striped">
               <thead>
                 <tr>
@@ -44,6 +44,8 @@
                 </tr>
               </thead>
               <tbody>
+                <% attendances = Attendance.where(user_id: applicant.id, work_status: "申請中", work_instructor: @user.name) %>
+                <% attendances.each do |attendance| %>
                 <tr>
                   <td><%= l(attendance[:worked_on].to_date, format: :short) %></td>
                   <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
@@ -56,15 +58,16 @@
                   <td><%= f.select :finished_at_hour, options_for_select((0..23).to_a, attendance.finished_at.try(:hour)), { include_blank: true }, class: "form-control" %></td>
                   <td><%= f.select :finished_at_minute, options_for_select((0..59).to_a, attendance.finished_at.try(:min)), { include_blank: true }, class: "form-control" %></td>
                   <td><%= f.text_field :overtime_content, class: "form-control" %></td>
-                  <td><%= f.select :status, [["なし", "なし"], ["申請中", "申請中"], ["承認", "承認"], ["否認", "否認"]], { include_blank: true }, class: "form-control" %></td>
+                  <td><%= f.select :work_status, [["なし", "なし"], ["申請中", "申請中"], ["承認", "承認"], ["否認", "否認"]], { include_blank: true }, class: "form-control" %></td>
                   <td><%= f.check_box :approval, class: "form-control" %></td>
-                  <td><%= f.submit "確認", class: "btn btn-primary btn-sm" %></td>
+                  <td><%= link_to "確認", attendances_show_monthly_attendances_modal_user_path(attendance.id), class: "btn btn-primary btn-sm" %></td>
                 </tr>
+               <% end %>
               </tbody>
             </table>
             <%= f.submit "変更を送信する", class: "btn btn-primary btn-block" %>
+           <% end %>
           <% end %>
-        <% end %>
       </div> <!-- .center -->
     </div> <!-- .modal-body -->
   </div> <!-- .modal-content -->

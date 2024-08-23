@@ -33,7 +33,7 @@ class AttendancesController < ApplicationController
     @superiors = User.where(superior: true)
   end
 
-  #勤怠編集ページの更新ボタン押下時の処理
+  #勤怠編集ページの”編集を保存する”ボタン押下時の処理
   def update_one_month
     apply_flg = false  # apply_flg を定義
   
@@ -47,6 +47,7 @@ class AttendancesController < ApplicationController
           flash[:danger] = "出社時間と退社時間の両方を入力してください。"
           redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
         else
+          
           unless attendance.worked_on > Date.today # 当日以降の勤怠は更新しないようにする
             if item[:work_instructor].present?
             #勤怠変更情報を一時保存する（※上長に承認を貰うまでは、変更情報を出社時間・退社時間に反映しない）
@@ -76,7 +77,9 @@ class AttendancesController < ApplicationController
   #勤怠変更申請　モーダル表示
   def show_change_modal
     @user = User.find(params[:id])
-    @attendances = @user.attendances.where(status: "申請中").distinct
+    @attendances = @user.attendances.where(work_status: "申請中").distinct
+    @applicants = User.joins(:attendances).where(attendances: {work_status: "申請中", work_instructor: @user.name}).distinct
+    @change_req_sum = @attendances.count
   end
 
   #勤怠変更申請　承認処理
@@ -110,7 +113,7 @@ class AttendancesController < ApplicationController
     end
   end
   
-  #残業申請の内容表示
+  #残業申請のモーダル表示
   def show_overtime_modal
     @user = User.find(params[:id])
     @applicants = User.joins(:attendances).where(attendances: {status: "申請中", overtime_instructor: @user.name}).distinct
@@ -223,7 +226,7 @@ class AttendancesController < ApplicationController
   end
 
   def attendances_params
-    params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
+    params.require(:user).permit(attendances: [:started_at, :finished_at, :note, :work_instructor, :work_approval])[:attendances]
   end
 
   def overtime_application_params
