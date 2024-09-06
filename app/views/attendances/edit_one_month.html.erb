@@ -26,8 +26,8 @@
                 <td><%= attendance.time_field :started_at, readonly: true, class: "form-control" %></td>
                 <td><%= attendance.time_field :finished_at, readonly: true, class: "form-control" %></td>
               <% else %>
-                <td><%= attendance.time_field :started_at, class: "form-control" %></td>
-                <td><%= attendance.time_field :finished_at, class: "form-control" %></td>
+                <td><%= attendance.time_field :started_at, class: "form-control", value: day.started_at&.strftime("%H:%M") %></td>
+                <td><%= attendance.time_field :finished_at, class: "form-control", value: day.finished_at&.strftime("%H:%M") %></td>
               <% end %>
               <td><%= attendance.check_box :work_approval, class: "form-contcol" %></td>
               <td>

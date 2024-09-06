@@ -20,5 +20,9 @@ module ApplicationHelper
     # 戻り値として『時間外時間』を返す（時間外時間 ＝ 終了予定時間 − 指定勤務終了時間）
     h1 - h2
   end
+
+  def format_basic_info(time)
+    time.strftime("%H:%M") if time.present?
+  end
 end
 

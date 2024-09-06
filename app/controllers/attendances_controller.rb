@@ -29,8 +29,11 @@ class AttendancesController < ApplicationController
 
   # 勤怠編集ページの表示
   def edit_one_month
-    @attendance = Attendance.find(params[:id])
+    @user = User.find(params[:id])
     @superiors = User.where(superior: true)
+    @first_day = params[:date].to_date
+    @last_day = @first_day.end_of_month
+    @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
   end
 
   #勤怠編集ページの”編集を保存する”ボタン押下時の処理
@@ -84,6 +87,38 @@ class AttendancesController < ApplicationController
 
   #勤怠変更申請　承認処理
   def update_change_modal
+    apply_flg = false
+    ActiveRecord::Base.transaction do
+      attendance_change_params.each do |id, item|
+        if item[:work_approval] == "1"
+          attendance = Attendance.find(id)
+          case item[:work_status]
+          when "承認"
+            attendance.started_at = item[:chg_started_at]
+            attendance.finished_at = item[:chg_finished_at]
+            attendance.work_status = "承認"
+            attendance.work_approval = "true"
+            apply_flg = true
+          when "否認"
+            attendance.work_status = "否認"
+            attendance.work_approval = "true"
+            apply_flg = true
+          else
+            # 何もしない
+          end
+          attendance.work_instructor = item[:work_instructor]
+          attendance.save!
+        end
+      end
+    end
+
+    if apply_flg
+      flash[:success] = "勤怠変更申請について、指示者確認情報を更新しました。"
+    end
+    redirect_to user_url
+  rescue ActiveRecord::RecordInvalid
+    flash[:danger] = "無効なデータがあったため、更新をキャンセルしました。"
+    redirect_to user_url
   end
 
   #残業申請ボタン押下・表示
@@ -226,7 +261,11 @@ class AttendancesController < ApplicationController
   end
 
   def attendances_params
-    params.require(:user).permit(attendances: [:started_at, :finished_at, :note, :work_instructor, :work_approval])[:attendances]
+    params.require(:user).permit(attendances: [:started_at, :finished_at, :note, :work_instructor, :work_approval, :chg_started_at, :chg_finished_at])[:attendances]
+  end  
+
+  def attendance_change_params
+    params.require(:user).permit(attendances: [:work_status, :work_approval])[:attendances]
   end
 
   def overtime_application_params
