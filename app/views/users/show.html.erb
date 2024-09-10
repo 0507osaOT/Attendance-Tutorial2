@@ -25,21 +25,27 @@
 </div>
 
 <% if current_user.superior %>
-  <%= link_to "【所属長承認申請のお知らせ】", attendances_show_monthly_attendances_modal_user_path, remote: true %>
   <% if @approval_req_sum.present? && @approval_req_sum > 0 %>
+    <%= link_to "【所属長承認申請のお知らせ】", attendances_show_monthly_attendances_modal_user_path, remote: true %>
     <span class="tsuuti"><%= @approval_req_sum %>件の通知があります。</span>
-  <% end %>
-  <br/>
-
-  <%= link_to "【勤怠変更申請のお知らせ】", attendances_show_change_modal_user_path, remote: true %>
-  <% if @change_req_sum.present? && @change_req_sum > 0 %>
-    <span class="tsuuti"><%= @change_req_sum %>件の通知があります。</span>
+  <% else %>
+    <span>【勤怠変更申請のお知らせ】</span>
   <% end %>
   <br/>
   
-  <%= link_to "【残業申請のお知らせ】", attendances_show_overtime_modal_user_path, remote: true %>
+  <% if @change_req_sum.present? && @change_req_sum > 0 %>
+    <%= link_to "【勤怠変更申請のお知らせ】", attendances_show_change_modal_user_path, remote: true %>
+    <span class="tsuuti"><%= @change_req_sum %>件の通知があります。</span>
+  <% else %>
+    <span>【勤怠変更申請のお知らせ】</span>
+  <% end %>
+  <br/>
+  
   <% if @attendance_chg_req_sum.present? && @attendance_chg_req_sum > 0 %>
+    <%= link_to "【残業申請のお知らせ】", attendances_show_overtime_modal_user_path, remote: true %>
     <span class="tsuuti"><%= @attendance_chg_req_sum %>件の通知があります。</span>
+  <% else %>
+    <span>【残業申請のお知らせ】</span>
   <% end %>
   <br/>
   <br/>
