@@ -94,10 +94,11 @@ class AttendancesController < ApplicationController
           attendance = Attendance.find(id)
           case item[:work_status]
           when "承認"
-            attendance.started_at = item[:chg_started_at]
-            attendance.finished_at = item[:chg_finished_at]
+            attendance.started_at = attendance.chg_started_at
+            attendance.finished_at = attendance.chg_finished_at
             attendance.work_status = "承認"
             attendance.work_approval = "true"
+            attendance.approval_date = Time.now
             apply_flg = true
           when "否認"
             attendance.work_status = "否認"
@@ -106,7 +107,6 @@ class AttendancesController < ApplicationController
           else
             # 何もしない
           end
-          attendance.work_instructor = item[:work_instructor]
           attendance.save!
         end
       end
@@ -253,6 +253,23 @@ class AttendancesController < ApplicationController
   rescue ActiveRecord::RecordInvalid
     flash[:danger] = "無効なデータがあったため、更新をキャンセルしました。"
     redirect_to user_url(date: params[:date])
+  end
+
+  #勤怠修正ログ・変更履歴表示
+  def search_log
+    @user = User.find(params[:user_id]) # ユーザーを取得
+  
+    # 承認済みの勤怠情報を取得
+    @attendance_logs = Attendance.where(user_id: @user.id).where.not(work_approval: nil)
+  
+    # 年月の検索パラメータがある場合、絞り込みを行う
+    if params[:year].present? && params[:month].present?
+      start_date = Date.new(params[:year].to_i, params[:month].to_i, 1)
+      end_date = start_date.end_of_month
+      @attendance_logs = @attendance_logs.where(worked_on: start_date..end_date)
+    end
+  
+    @attendance_logs = @attendance_logs.order(worked_on: :desc)
   end
 
   private

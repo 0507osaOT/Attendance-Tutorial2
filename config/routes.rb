@@ -62,13 +62,18 @@ Rails.application.routes.draw do
       
       #1ヶ月分の勤怠申請
       patch 'attendances/send_monthly_attendance_request'
-
     end
     resources :attendances do
       member do
         patch 'update_overtime_application_req'
       end
+  
+      collection do
+        # 勤怠修正ログ
+        get 'search_log'
+      end
     end
+    
     # 申請された上長ユーザー画面
     get 'attendances/edit_overtime_application_req'
     patch 'attendances/edit_overtime_applied_req'

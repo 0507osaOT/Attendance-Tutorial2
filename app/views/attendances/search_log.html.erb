@@ -1,0 +1,48 @@
+<%# search_log.html.erb %>
+<h1 align="center">勤怠ログ</h1>
+
+<div align="center" style="margin-bottom: 20px;">
+  <%= form_with url: search_log_user_attendances_path, method: :get, local: true do |f| %>
+    <%= f.label :year, "年:" %>
+    <%= f.select :year, (Time.current.year-10..Time.current.year).to_a.reverse, selected: params[:year] || Time.current.year %>
+    &nbsp;&nbsp;
+    <%= f.label :month, "月:" %>
+    <%= f.select :month, 1..12, selected: params[:month] || Time.current.month %>
+    &nbsp;&nbsp;
+    <%= f.submit "検索" %>
+    <%= f.submit "リセット" %>
+  <% end %>
+</div>
+
+<table width="100%" border="1" cellspacing="0" cellpadding="10" style="border-collapse: collapse;">
+  <thead>
+    <tr bgcolor="#f2f2f2">
+      <th align="left" style="padding: 15px;">日付</th>
+      <th align="left" style="padding: 15px;">変更前出社時間</th>
+      <th align="left" style="padding: 15px;">変更前退社時間</th>
+      <th align="left" style="padding: 15px;">変更後出社</th>
+      <th align="left" style="padding: 15px;">変更後退社</th>
+      <th align="left" style="padding: 15px;">指示者</th>
+      <th align="left" style="padding: 15px;">承認日</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if @attendance_logs.present? %>
+      <% @attendance_logs.each_with_index do |log, index| %>
+        <tr>
+          <td style="padding: 15px;"><%= log.worked_on.to_date %></td>
+          <td style="padding: 15px;"><%= log.started_at.strftime("%H:%M") if log.started_at %></td>
+          <td style="padding: 15px;"><%= log.finished_at.strftime("%H:%M") if log.finished_at %></td>
+          <td style="padding: 15px;"><%= log.chg_started_at.strftime("%H:%M") if log.chg_started_at %></td>
+          <td style="padding: 15px;"><%= log.chg_finished_at.strftime("%H:%M") if log.chg_finished_at %></td>
+          <td style="padding: 15px;"><%= log.work_instructor %></td>
+          <td style="padding: 15px;"><%= log.approval_date.strftime("%Y-%m-%d") if log.approval_date %></td>
+        </tr>
+      <% end %>
+    <% else %>
+      <tr>
+        <td colspan="7">該当するログがありません</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
