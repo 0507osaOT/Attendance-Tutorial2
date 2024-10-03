@@ -31,10 +31,10 @@
       <% @attendance_logs.each_with_index do |log, index| %>
         <tr>
           <td style="padding: 15px;"><%= log.worked_on.to_date %></td>
+          <td style="padding: 15px;"><%= log.before_started_at.strftime("%H:%M") if log.before_started_at %></td>
+          <td style="padding: 15px;"><%= log.before_finished_at.strftime("%H:%M") if log.before_finished_at %></td>
           <td style="padding: 15px;"><%= log.started_at.strftime("%H:%M") if log.started_at %></td>
           <td style="padding: 15px;"><%= log.finished_at.strftime("%H:%M") if log.finished_at %></td>
-          <td style="padding: 15px;"><%= log.chg_started_at.strftime("%H:%M") if log.chg_started_at %></td>
-          <td style="padding: 15px;"><%= log.chg_finished_at.strftime("%H:%M") if log.chg_finished_at %></td>
           <td style="padding: 15px;"><%= log.work_instructor %></td>
           <td style="padding: 15px;"><%= log.approval_date.strftime("%Y-%m-%d") if log.approval_date %></td>
         </tr>
