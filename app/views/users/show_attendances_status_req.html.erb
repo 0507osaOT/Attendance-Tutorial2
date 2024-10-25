@@ -3,9 +3,8 @@
 <div>
   <table class="table table-bordered table-condensed user-table">
     <tr>
-      <td><%= link_to " ⇦ ", user_path(date: @first_day.prev_month), class: "btn btn-primary btn-attendance" %>
+      <td>
         <%= l(@first_day, format: :middle) %> 時間管理表
-      <%= link_to " ⇨ ", user_path(date: @first_day.next_month), class: "btn btn-primary btn-attendance" %>
       </td>
       <td>指定勤務開始時間：<%= format_basic_info(@user.designated_work_start_time) %><br>
           指定勤務終了時間：<%= format_basic_info(@user.designated_work_end_time) %></td>
@@ -24,7 +23,7 @@
   </table>
 </div>
 
-  <table class="table table-bordered table-condensed table-hover" id="table-attendances">	
+  <table class="table table-bordered table-condensed table-hover" id="table-attendances">
     <thead>	
         <tr>
           <th rowspan="3">日付</th>
@@ -66,17 +65,20 @@
       <tr>
         <td><%= l(day.worked_on, format: :short) %></td>
         <td class="<%= css_class %>"><%= $days_of_the_week[day.worked_on.wday] %></td>
-        <td>
-          <% if btn_text = attendance_state(day) %>
-            <%= link_to "#{btn_text}登録", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" %>
-          <% end %>
-        </td>
-        <td><%= l(day.started_at.floor_to(15.minutes), format: :time) if day.started_at.present? %></td>
-        <td><%= l(day.finished_at.floor_to(15.minutes), format: :time) if day.finished_at.present? %></td>
+        <!-- 出社時間 -->
+        <td><%= format('%02d', day.started_at.hour) if day.started_at.present? %></td>
+        <td><%= format('%02d', day.started_at.min) if day.started_at.present? %></td>
+        <td></td>
+        <!-- 退社時間 -->
+        <td><%= format('%02d', day.finished_at.hour) if day.finished_at.present? %></td>
+        <td><%= format('%02d', day.finished_at.min) if day.finished_at.present? %></td>
+        <td></td>
+        <!-- 在社時間 -->
         <td>
           <% if day.started_at.present? && day.finished_at.present? %>
-            <%= str_times = working_times(day.started_at.floor_to(15.minutes), day.finished_at.floor_to(15.minutes)) %>
+            <% str_times = working_times(day.started_at.floor_to(15.minutes), day.finished_at.floor_to(15.minutes)) %>
             <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
+            <%= str_times %>
           <% end %>
         </td>
         <td><%= day.note %></td>

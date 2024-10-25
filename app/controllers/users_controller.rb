@@ -9,10 +9,22 @@ class UsersController < ApplicationController
 
     # システム管理権限所有かどうか判定します。
   def index
-    @users = User.all
-    @users = @users.where('name LIKE ?', "%#{params[:search]}%") if params[:search].present?
-    @users = User.paginate(page: params[:page], per_page: 20)  # 20件ずつ表示（調整可）
+      # 基本のユーザー取得
+      @users = User.all
+    
+      # 検索クエリがある場合はフィルタリング
+      if params[:search].present?
+        search_term = params[:search].downcase
+        @users = @users.where('LOWER(name) LIKE ?', "%#{search_term}%")
+      end
+    
+      # ページネーションの適用
+      @users = @users.paginate(page: params[:page], per_page: 20)
+    rescue
+      flash.now[:danger] = "検索でエラーが発生しました。"
+      @users = User.paginate(page: params[:page], per_page: 20)
   end
+    
 
   def show
     @user = User.find(params[:id])
@@ -107,9 +119,12 @@ class UsersController < ApplicationController
   end
   
   def attendance_at_work
-  # 出勤時間のみ格納されている一般ユーザーを取得する
-    @users = User.joins(:attendances).where.not(attendances: { started_at: nil }).where.not(name: "Sample User")
-  # 他の処理があればここに追加
+    today = Date.current  # または Date.today
+    @users = User.joins(:attendances)
+      .where(attendances: { worked_on: today })        # ① 今日の日付
+      .where.not(attendances: { started_at: nil })    # ② 出勤済み
+      .where(attendances: { finished_at: nil })       # ③ 未退勤
+      .where.not(name: "Sample User")                 # Sample User以外
   end
   
   def update_attendance
@@ -129,7 +144,7 @@ class UsersController < ApplicationController
   private
 
   def users_params
-    params.require(:user).permit(:name, :email, :department, :password, :password_confirmation)
+    params.require(:user).permit(:name, :email, :department, :employee_number, :password, :password_confirmation)
   end
 
   def basic_info_params

@@ -31,6 +31,9 @@ class AttendancesController < ApplicationController
   def edit_one_month
     @user = User.find(params[:id])
     @superiors = User.where(superior: true)
+    @current_user = current_user # ログインしている上長
+    @superiors = User.where(superior: true).where.not(id: @current_user.id) # ログイン中の上長を除外
+    @attendances = Attendance.all
     @first_day = params[:date].to_date
     @last_day = @first_day.end_of_month
     @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
@@ -116,6 +119,8 @@ class AttendancesController < ApplicationController
 
     if apply_flg
       flash[:success] = "勤怠変更申請について、指示者確認情報を更新しました。"
+    else
+      flash[:info] = "変更がありませんでした。"
     end
     redirect_to user_url
   rescue ActiveRecord::RecordInvalid
@@ -182,6 +187,8 @@ class AttendancesController < ApplicationController
 
     if apply_flg
       flash[:success] = "残業申請について、指示者確認情報を更新しました。"
+    else
+      flash[:info] = "変更がありませんでした。"
     end
     redirect_to user_url(date: params[:date])
   rescue ActiveRecord::RecordInvalid
@@ -190,11 +197,10 @@ class AttendancesController < ApplicationController
   end
 
   #確認用の勤怠表示(残業申請・所属長承認申請・勤怠変更申請)
-  def show_attendances_status_req
-    @applicant = User.find(params[:id])
-    @attendances = @applicant.attendances.where(status: "申請中").distinct
-    render 'show'
-  end
+  # def show_attendances_status_req
+  #   @applicant = User.find(params[:id])
+  #   @attendances = @applicant.attendances.where(status: "申請中").distinct
+  # end
   
   #1ヶ月分の勤怠申請処理
   def send_monthly_attendance_request

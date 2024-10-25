@@ -10,13 +10,14 @@
   </thead>
   <tbody>
     <% @users.each do |user| %>
-      <% if user.attendances.first && user.attendances.first.started_at.present? %>
         <tr>
           <td><%= user.employee_number %></td>
           <td><%= user.name %></td>
-          <td><%= user.attendances.first.started_at.strftime('%Y-%m-%d %H:%M:%S') %></td>
         </tr>
-      <% end %>
     <% end %>
   </tbody>
 </table>
+
+<% if @users.empty? %>
+  <p>現在出勤中の社員はいません。</p>
+<% end %>

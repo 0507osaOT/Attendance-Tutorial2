@@ -33,7 +33,8 @@
                     <%= f.fields_for "monthly_attendances[#{monthly_attendance.id}]", monthly_attendance do |i| %>
                       <td><%= i.select :master_status, [["なし", "なし"], ["申請中", "申請中"], ["承認", "承認"], ["否認", "否認"]], { include_blank: "" }, { required: true, class: "head_of_department_approval_modal" } %></td>
                       <td><%= i.check_box :approval %></td>
-                      <td><%= link_to "確認", show_attendances_status_req_user_path(applicant, monthly_attendance.id), class: "btn btn-primary btn-sm" %></td>
+                      <% confirm_date = monthly_attendance.year + "-" + monthly_attendance.month + "-01 00:00" %>
+                      <td><%= link_to "確認", show_attendances_status_req_user_path(applicant, monthly_attendance.id, date: confirm_date.to_datetime.beginning_of_month), class: "btn btn-primary btn-sm" %></td>
                       <%= i.hidden_field :id, value: monthly_attendance.id %>
                     <% end %>
                   </tr>

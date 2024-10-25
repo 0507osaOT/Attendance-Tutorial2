@@ -1,3 +1,4 @@
+<%# index.html.erb %>
 <% provide(:title, 'All Users') %>
 <% provide(:button_text, '編集する') %>
 <% if params[:search].blank? %>
@@ -30,7 +31,7 @@
             <div class="panel panel-default">
               <div class="panel-heading button-edit">
                 <button class="btn btn-primary btn-lg" data-toggle="collapse" data-target="#collapse-<%= user.id %>">編集</button>
-　　　　　　　</div>
+         </div>
                     <div class="collapse panel-body" id="collapse-<%= user.id%>">
                       <%= form_with(model: user, local: true) do |f| %>
                         <%= render 'shared/error_messages', object: user %>
@@ -40,14 +41,14 @@
                         <%= f.text_field :email, class: "form-control" %>
                         <%= f.label :department, class: "label-#{yield(:class_text)}" %>
                         <%= f.text_field :department, class: "form-control" %>
-                        <%= f.label :employeenumber, class: "label-#{yield(:class_text)}" %>
-                        <%= f.text_field :employeenumber, class: "form-control" %>
+                        <%= f.label :employee_number, class: "label-#{yield(:class_text)}" %>
+                        <%= f.text_field :employee_number, class: "form-control" %>
                         <%= f.label :cardID, class: "label-#{yield(:class_text)}" %>
                         <%= f.text_field :cardID, class: "form-control" %>
                         <%= f.label :password, class: "label-#{yield(:class_text)}" %>
-                        <%= f.text_field :password, class: "form-control" %>
+                        <%= f.password_field :password, class: "form-control" %>
                         <%= f.label :password_confirmation, class: "label-#{yield(:class_text)}" %>
-                        <%= f.text_field :password_confirmation, class: "form-control" %>
+                        <%= f.password_field :password_confirmation, class: "form-control" %>
                         <%= f.label :basic_time, class: "label-#{yield(:class_text)}" %>
                         <%= f.time_field :basic_time, class: "form-control" %>
                         <%= f.label :指定勤務開始時間, class: "label-#{yield(:class_text)}" %>
