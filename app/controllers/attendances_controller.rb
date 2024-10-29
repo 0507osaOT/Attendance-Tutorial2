@@ -280,6 +280,52 @@ class AttendancesController < ApplicationController
     @attendance_logs = @attendance_logs.order(worked_on: :desc)
   end
 
+  def export_csv
+    # 受け取った日付パラメータをDate型に変換
+    target_date = Date.parse(params[:date])
+    if params[:user_id].present?
+      @user = User.find(params[:user_id])
+      @attendances = @user.attendances.where(worked_on: target_date.beginning_of_month..target_date.end_of_month)
+    else
+      @attendances = Attendance.where(worked_on: target_date.beginning_of_month..target_date.end_of_month)
+    end
+    # 曜日の配列を定義
+    youbi = %w[日 月 火 水 木 金 土]
+    # CSVデータの生成
+    csv_data = CSV.generate do |csv|
+      # ヘッダー行
+      csv << ['日付', '曜日', '出社時間', '退社時間']
+      
+      # データ行
+    @attendances.each do |attendance|
+      # 出社/退社時間の処理
+      start_time = '--:--'
+      if attendance.started_at.present?
+        start_time = attendance.started_at.strftime('%H:%M')
+      end
+
+      end_time = '--:--'  
+      if attendance.finished_at.present?
+        end_time = attendance.finished_at.strftime('%H:%M')
+      end
+
+      csv << [
+        attendance.worked_on.strftime('%-m/%-d'),
+        youbi[attendance.worked_on.wday],
+        start_time,
+        end_time
+      ]
+    end
+    end
+
+    # CSVファイルとしてダウンロード
+    timestamp = Time.current.strftime('%Y%m%d')
+    send_data csv_data,
+              filename: "attendance_#{timestamp}.csv",
+              type: 'text/csv',
+              charset: 'shift_jis'
+  end
+
   private
   def show_monthly_attendances_modal_params
     params.require(:user).permit(monthly_attendances: [:master_status,:approval])[:monthly_attendances]

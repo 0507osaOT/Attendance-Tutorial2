@@ -72,6 +72,11 @@ Rails.application.routes.draw do
         # 勤怠修正ログ
         get 'search_log'
       end
+
+      collection do
+        # CSVエクスポート追加
+        get 'export_csv'
+      end
     end
     
     # 申請された上長ユーザー画面
