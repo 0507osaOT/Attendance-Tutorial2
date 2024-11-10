@@ -28,6 +28,18 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
+  
+  # 管理者の場合はアクセス不可
+  if current_user.admin?
+    
+    redirect_to(root_url) and return
+  end
+
+  # 上長または本人以外はアクセス不可
+  unless current_user.superior? || current_user == @user
+    flash[:danger] = "権限がありません"
+    redirect_to(root_url) and return
+  end
     @attendances = @user.attendances.where(worked_on: @first_day..@last_day)
     @worked_sum = @attendances.where.not(started_at: nil).count
     @attendance_chg_req_sum = Attendance.where(status: "申請中", overtime_instructor: @user.name).count

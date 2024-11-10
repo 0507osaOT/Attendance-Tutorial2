@@ -139,7 +139,8 @@
             <% end %>
         </td>
         <td><%= day.overtime_content.present? ? day.overtime_content : "-" %></td>
-        <td><%= day.status.present? ? day.status : "-" %></td>
+        <td><%= day.status.present? ? "#{day.overtime_instructor} に残業申請：#{day.status}<br>".html_safe : "" %>
+            <%= day.work_status.present? ? "#{day.work_instructor} に勤怠変更申請：#{day.work_status}" : "" %></td>
       </tr>
     <% end %>
     </tbody>

@@ -41,41 +41,44 @@ class AttendancesController < ApplicationController
 
   #勤怠編集ページの”編集を保存する”ボタン押下時の処理
   def update_one_month
-    apply_flg = false  # apply_flg を定義
-  
-    ActiveRecord::Base.transaction do # トランザクションを開始します。
+    ActiveRecord::Base.transaction do
       attendances_params.each do |id, item|
         attendance = Attendance.find(id)
-        if item[:started_at].present? && item[:finished_at].blank?
-          flash[:danger] = "出社時間と退社時間の両方を入力してください。"
-          redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
-        elsif item[:started_at].blank? && item[:finished_at].present?
-          flash[:danger] = "出社時間と退社時間の両方を入力してください。"
-          redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
-        else
-          
-          unless attendance.worked_on > Date.today # 当日以降の勤怠は更新しないようにする
-            if item[:work_instructor].present?
-            #勤怠変更情報を一時保存する（※上長に承認を貰うまでは、変更情報を出社時間・退社時間に反映しない）
+        @attendance = attendance
+  
+        # 指示者確認印が選択されている場合のみ処理を行う
+        next unless item[:work_instructor].present?
+  
+        # 出社時間と退社時間の両方が入力されている場合
+        if item[:started_at].present? && item[:finished_at].present?
+          # 退社時間が出社時間以前の場合はエラーを返して処理を終了する
+          if item[:finished_at] <= item[:started_at]
+            flash[:danger] = "退社時間は出社時間より遅い時間を入力してください。"
+            redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+          else
+            # 当日以降の勤怠は更新しない
+            unless attendance.worked_on > Date.today
+              # 勤怠変更情報を一時保存する
               attendance.chg_started_at = item[:started_at]
               attendance.chg_finished_at = item[:finished_at]
               attendance.note = item[:note]
               attendance.work_instructor = item[:work_instructor]
               attendance.work_status = "申請中"
-
-              #DBへ保存する
-              attendance.save
+              attendance.save!
             end
           end
+        else
+          # 出社時間または退社時間のどちらかが入力されていない場合
+          flash[:danger] = "出社時間と退社時間の両方を入力してください。"
+          redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
         end
       end
   
-      apply_flg = true # トランザクションが正常に終了した場合にフラグを設定
-  
       flash[:success] = "勤怠変更を更新しました。"
       redirect_to user_url(date: params[:date])
-    rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
+    rescue ActiveRecord::RecordInvalid => e
       flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
+      flash[:danger] += " #{e.message}" if e.message.present?
       redirect_to attendances_edit_one_month_user_url(date: params[:date])
     end
   end
