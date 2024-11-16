@@ -5,7 +5,7 @@ class UsersController < ApplicationController
   before_action :admin_or_correct_user, only: [:update]
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info]
   before_action :set_one_month, only: [:show, :show_attendances_status_req]
-  #before_action :check_user_authorization, only: [:index, :show]
+  before_action :check_admin, only: [:update_attendance, :users, :attendance_at_work, :index, :import]
 
     # システム管理権限所有かどうか判定します。
   def index
@@ -151,6 +151,13 @@ class UsersController < ApplicationController
     @worked_sum = @attendances.where.not(started_at: nil).count
     @attendance_chg_req_sum = Attendance.where(status: "申請中",overtime_instructor: @user.name).count
 
+  end
+
+  def check_admin
+    unless current_user&.admin?      # もし現在のユーザーが管理者でなければ
+      flash[:alert] = "管理者権限が必要です"  # エラーメッセージを設定
+      redirect_to root_path          # トップページに強制的に移動させる
+    end
   end
   
   private

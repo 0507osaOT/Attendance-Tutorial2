@@ -100,8 +100,12 @@ class AttendancesController < ApplicationController
           attendance = Attendance.find(id)
           case item[:work_status]
           when "承認"
-            attendance.before_started_at = attendance.started_at
-            attendance.before_finished_at = attendance.finished_at
+            if attendance.before_started_at.nil?
+              attendance.before_started_at = attendance.started_at
+            end
+            if attendance.before_finished_at.nil?
+              attendance.before_finished_at = attendance.finished_at
+            end
             attendance.started_at = attendance.chg_started_at
             attendance.finished_at = attendance.chg_finished_at
             attendance.work_status = "承認"
