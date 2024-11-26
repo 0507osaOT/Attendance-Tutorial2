@@ -16,7 +16,6 @@ Rails.application.routes.draw do
   get '/attendance_at_work', to: 'users#attendance_at_work'
   get '/update_attendance', to: 'users#update_attendance'
   #get '/correction', to: 'users#correction'
-  get '/index', to: 'bases#index'
 
   resources :users do
     collection {post :import}

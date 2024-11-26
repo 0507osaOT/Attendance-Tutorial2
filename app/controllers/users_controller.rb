@@ -1,11 +1,11 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :show_attendances_status_req]
-  before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :edit_user, ]
+  before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :edit_user]
   before_action :correct_user, only: [:edit]
   before_action :admin_or_correct_user, only: [:update]
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info]
   before_action :set_one_month, only: [:show, :show_attendances_status_req]
-  before_action :check_admin, only: [:update_attendance, :users, :attendance_at_work, :index, :import]
+  before_action :check_admin, only: [:update_attendance, :attendance_at_work, :index, :import]
 
     # システム管理権限所有かどうか判定します。
   def index
@@ -73,29 +73,23 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @user =User.find(params[:id])
+    @user = User.find(params[:id])
+    redirect_to(root_url) unless current_user.admin? || current_user == @user
   end
-
+  
   def update
-      @user = User.find(params[:id])  # ユーザーのインスタンスを取得
-      @attendance = @user.attendances.find_by(id: params[:attendance_id])  # ユーザーの出勤情報のインスタンスを取得
-      
+    @user = User.find(params[:id])
+    if current_user.admin? || current_user == @user
       if @user.update(users_params)
         flash[:success] = "ユーザー情報を更新しました"
-        
-        if current_user.admin?  #管理者の場合
-           redirect_to users_url
-        else
-           redirect_to @user
-        end
-      
+        redirect_to users_url
       else
-         if current_user.admin?  #管理者の場合
-           redirect_to users_url
-         else
-           render :edit
-         end
+        render :edit
       end
+    else
+      flash[:danger] = "権限がありません"
+      redirect_to root_url
+    end
   end
 
   def destroy
@@ -155,7 +149,7 @@ class UsersController < ApplicationController
 
   def check_admin
     unless current_user&.admin?      # もし現在のユーザーが管理者でなければ
-      flash[:alert] = "管理者権限が必要です"  # エラーメッセージを設定
+      flash[:danger] = "管理者権限が必要です"  # エラーメッセージを設定
       redirect_to root_path          # トップページに強制的に移動させる
     end
   end
@@ -187,7 +181,7 @@ class UsersController < ApplicationController
   
   def correct_user
     @user = User.find(params[:id])
-    redirect_to(root_url) unless current_user?(@user)
+    redirect_to(root_url) unless current_user?(@user) || current_user.admin?
   end
   
   def user_admin
@@ -202,7 +196,7 @@ class UsersController < ApplicationController
   def check_user_authorization
     user = User.find(params[:id])
     unless current_user.admin || current_user == user
-      flash[:alert] = "権限がありません"
+      flash[:danger] = "権限がありません"
      redirect_to(root_url)
     end
   end

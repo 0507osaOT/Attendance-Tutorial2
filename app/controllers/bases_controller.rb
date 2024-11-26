@@ -1,10 +1,13 @@
 # app/controllers/bases_controller.rb
 class BasesController < ApplicationController
+  before_action :check_admin, only: [:index, :show, :new, :edit, :create, :update, :destroy]
+
   def index
     @bases = Base.all
   end
 
   def show
+    @base = Base.find(params[:id])
   end
   
   def new
@@ -41,10 +44,17 @@ class BasesController < ApplicationController
     flash[:success] = "#{@base.base_name}のデータを削除しました。"
     redirect_to bases_url
   end
-  
+
   private
 
   def bases_params
     params.require(:base).permit(:base_number, :base_name, :attendance_type)
+  end
+
+  def check_admin
+    unless current_user&.admin?      # もし現在のユーザーが管理者でなければ
+      flash[:danger] = "管理者権限が必要です" # エラーメッセージを設定
+      redirect_to root_path          # トップページに強制的に移動させる
+    end
   end
 end
